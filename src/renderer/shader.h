@@ -13,6 +13,11 @@
 #include <string>
 
 class Shader {
+ public:
+  Shader(std::string vertex_shader, std::string fragment_shader);
+  Shader() = default;
+  void use();
+
  private:
   GLuint vertex_shader;
   GLuint fragment_shader;
@@ -20,11 +25,6 @@ class Shader {
 
   void compile_shader(std::string& shader_path, GLuint& shader);
   std::string load_shader(std::string filename);
-
- public:
-  Shader(std::string& vertex_shader, std::string& fragment_shader);
-  Shader() = default;
-  void use();
 };
 
 #endif

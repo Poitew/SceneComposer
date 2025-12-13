@@ -37,7 +37,7 @@ void Shader::compile_shader(std::string& shader_path, GLuint& shader) {
   }
 }
 
-Shader::Shader(std::string& vertex_path, std::string& fragment_path) {
+Shader::Shader(std::string vertex_path, std::string fragment_path) {
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
