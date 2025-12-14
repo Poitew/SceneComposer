@@ -53,4 +53,9 @@ Shader::Shader(std::string vertex_path, std::string fragment_path) {
   glDeleteShader(fragment_shader);
 }
 
+void Shader::set_mat4(std::string name, glm::mat4 val) {
+  GLuint trans_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniformMatrix4fv(trans_location, 1, GL_FALSE, glm::value_ptr(val));
+}
+
 void Shader::use() { glUseProgram(shader_program); }

@@ -7,6 +7,8 @@
 // clang-format on
 
 #include <fstream>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/matrix.hpp>
 #include <iostream>
 #include <sstream>
 #include <streambuf>
@@ -17,6 +19,7 @@ class Shader {
   Shader(std::string vertex_shader, std::string fragment_shader);
   Shader() = default;
   void use();
+  void set_mat4(std::string name, glm::mat4 val);
 
  private:
   GLuint vertex_shader;

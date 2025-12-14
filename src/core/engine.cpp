@@ -28,13 +28,23 @@ bool Engine::init_application() {
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
 
   shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
+  shader.use();
+
+  camera = {90, width, height, 0.1f, 100.0f};
+
+  shader.set_mat4("projection", camera.get_projection());
+  shader.set_mat4("view", camera.get_view());
 
   return true;
 }
 
-void Engine::being_frame() {
+void Engine::begin_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  shader.use();
+
+  // TODO: real input with future Keyboard class
+  camera.move(true, false, false, false, false, false, 0.01f);
+
+  shader.set_mat4("view", camera.get_view());
 }
 
 void Engine::end_frame() {

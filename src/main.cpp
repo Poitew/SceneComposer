@@ -8,7 +8,7 @@ int main() {
     Mesh sword = ModelLoader::load("src/core/spada.glb");
 
     while (!engine.should_close()) {
-      engine.being_frame();
+      engine.begin_frame();
 
       sword.draw();
 

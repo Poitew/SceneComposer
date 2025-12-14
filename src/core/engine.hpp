@@ -9,6 +9,7 @@
 #include <assimp/Importer.hpp>
 #include <string>
 
+#include "core/camera.hpp"
 #include "renderer/mesh.hpp"
 #include "renderer/shader.hpp"
 
@@ -18,7 +19,7 @@ class Engine {
   ~Engine();
 
   bool init_application();
-  void being_frame();
+  void begin_frame();
   void end_frame();
   bool should_close();
 
@@ -29,6 +30,7 @@ class Engine {
   const char* window_name;
 
   Shader shader;
+  Camera camera;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };
