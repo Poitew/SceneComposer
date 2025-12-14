@@ -1,5 +1,5 @@
-#ifndef ENGINE_H
-#define ENGINE_H
+#ifndef ENGINE_HPP
+#define ENGINE_HPP
 
 // clang-format off
 #include <glad/gl.h>
@@ -9,8 +9,8 @@
 #include <assimp/Importer.hpp>
 #include <string>
 
-#include "renderer/mesh.h"
-#include "renderer/shader.h"
+#include "renderer/mesh.hpp"
+#include "renderer/shader.hpp"
 
 class Engine {
  public:
@@ -18,7 +18,8 @@ class Engine {
   ~Engine();
 
   bool init_application();
-  void draw();
+  void being_frame();
+  void end_frame();
   bool should_close();
 
  private:
@@ -28,8 +29,6 @@ class Engine {
   const char* window_name;
 
   Shader shader;
-  Mesh mesh;
-  static Assimp::Importer importer;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

@@ -1,38 +1,14 @@
-#include "mesh.h"
+#include "mesh.hpp"
 
-void Mesh::get_data(const aiMesh* model) {
-  for (unsigned int i = 0; i < model->mNumVertices; i++) {
-    Vertex v;
-
-    v.position = {model->mVertices[i].x, model->mVertices[i].y, model->mVertices[i].z};
-
-    if (model->HasNormals()) {
-      v.normals = {model->mNormals[i].x, model->mNormals[i].y, model->mNormals[i].z};
-    } else {
-      v.normals = glm::vec3(0.0f);
-    }
-
-    if (model->HasTextureCoords(0)) {
-      v.texture_coords = {model->mTextureCoords[0][i].x, model->mTextureCoords[0][i].y};
-    } else {
-      v.texture_coords = glm::vec2(0.0f);
-    }
-
-    vertices.push_back(v);
-  }
-
-  for (unsigned int i = 0; i < model->mNumFaces; i++) {
-    const aiFace& face = model->mFaces[i];
-
-    for (unsigned int j = 0; j < face.mNumIndices; j++) {
-      indices.push_back(face.mIndices[j]);
-    }
-  }
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices)
+    : vertices{vertices}, indices{indices} {
+  setup();
 }
 
-Mesh::Mesh(const aiMesh* model) {
-  get_data(model);
-  setup();
+Mesh::~Mesh() {
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
 }
 
 void Mesh::setup() {

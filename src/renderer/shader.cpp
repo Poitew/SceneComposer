@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "shader.hpp"
 
 std::string Shader::load_shader(std::string filename) {
   std::ifstream file;

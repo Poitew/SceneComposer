@@ -1,5 +1,5 @@
-#ifndef MESH_H
-#define MESH_H
+#ifndef MESH_HPP
+#define MESH_HPP
 
 // clang-format off
 #include <glad/gl.h>
@@ -22,10 +22,10 @@ struct Vertex {
 
 class Mesh {
  public:
-  Mesh(const aiMesh* model);
+  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices);
   Mesh() = default;
+  ~Mesh();
 
-  void get_data(const aiMesh* model);
   void draw();
 
  private:

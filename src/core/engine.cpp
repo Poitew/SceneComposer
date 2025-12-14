@@ -1,6 +1,4 @@
-#include "engine.h"
-
-Assimp::Importer Engine::importer = Assimp::Importer();
+#include "engine.hpp"
 
 Engine::Engine(int width, int height, const char* window_name)
     : width{width}, height{height}, window_name{window_name} {}
@@ -31,33 +29,15 @@ bool Engine::init_application() {
 
   shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
 
-  // clang-format off
-  const aiScene* scene = importer.ReadFile(
-    "src/core/spada.glb", 
-    aiProcess_CalcTangentSpace | 
-    aiProcess_Triangulate |
-    aiProcess_JoinIdenticalVertices | 
-    aiProcess_SortByPType
-  );
-  // clang-format on
-
-  if (scene == nullptr) {
-    std::cout << importer.GetErrorString() << "\n";
-    return false;
-  }
-
-  const aiMesh* model = scene->mMeshes[0];
-
-  mesh = {model};
-
   return true;
 }
 
-void Engine::draw() {
-  glClear(GL_COLOR_BUFFER_BIT);
+void Engine::being_frame() {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  shader.use();
+}
 
-  mesh.draw();
-
+void Engine::end_frame() {
   glfwSwapBuffers(window);
   glfwPollEvents();
 }
