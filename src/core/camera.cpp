@@ -5,14 +5,15 @@ Camera::Camera(float fov, int width, int height, float near_plane, float far_pla
   camFront = glm::vec3(0.0f, 0.0f, -1.0f);
   camUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  projection = (glm::radians(fov), (float)width / height, near_plane, far_plane);
+  projection =
+      glm::perspective(glm::radians(fov), (float)width / (float)height, near_plane, far_plane);
 
   view = glm::lookAt(camPos, camPos + camFront, camUp);
 }
 
 void Camera::move(bool forward, bool backward, bool left, bool right, bool up, bool down,
                   float delta_time) {
-  const float speed = 1.0f * delta_time;
+  const float speed = 5.0f * delta_time;
 
   if (forward) camPos += speed * camFront;
 
