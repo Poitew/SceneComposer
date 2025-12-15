@@ -26,11 +26,12 @@ bool Engine::init_application() {
   }
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
+  glfwSetKeyCallback(window, Keyboard::key_callback);
 
   shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
   shader.use();
 
-  camera = {90, width, height, 0.1f, 100.0f};
+  camera = {90.0f, width, height, 0.1f, 1000.0f};
 
   shader.set_mat4("projection", camera.get_projection());
   shader.set_mat4("view", camera.get_view());
@@ -41,8 +42,9 @@ bool Engine::init_application() {
 void Engine::begin_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // TODO: real input with future Keyboard class
-  camera.move(true, false, false, false, false, false, 0.01f);
+  camera.move(Keyboard::is_down(GLFW_KEY_W), Keyboard::is_down(GLFW_KEY_S),
+              Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
+              Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), 0.01f);
 
   shader.set_mat4("view", camera.get_view());
 }
@@ -51,6 +53,8 @@ void Engine::end_frame() {
   glfwSwapBuffers(window);
   glfwPollEvents();
 }
+
+Shader& Engine::get_shader() { return shader; }
 
 bool Engine::should_close() { return glfwWindowShouldClose(window); }
 

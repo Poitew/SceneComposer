@@ -6,10 +6,11 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-#include <assimp/Importer.hpp>
+#include <glm/matrix.hpp>
 #include <string>
 
 #include "core/camera.hpp"
+#include "input/keyboard.hpp"
 #include "renderer/mesh.hpp"
 #include "renderer/shader.hpp"
 
@@ -22,6 +23,8 @@ class Engine {
   void begin_frame();
   void end_frame();
   bool should_close();
+
+  Shader& get_shader();
 
  private:
   GLFWwindow* window;

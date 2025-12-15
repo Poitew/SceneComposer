@@ -14,6 +14,8 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
+#include "renderer/shader.hpp"
+
 struct Vertex {
   glm::vec3 position;
   glm::vec3 normals;
@@ -26,7 +28,7 @@ class Mesh {
   Mesh() = default;
   ~Mesh();
 
-  void draw();
+  void draw(Shader& shader, glm::mat4 model);
 
  private:
   std::vector<Vertex> vertices;

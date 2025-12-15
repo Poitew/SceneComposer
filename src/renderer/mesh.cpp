@@ -35,7 +35,8 @@ void Mesh::setup() {
                         (void*)offsetof(Vertex, texture_coords));
 }
 
-void Mesh::draw() {
+void Mesh::draw(Shader& shader, glm::mat4 model) {
+  shader.set_mat4("model", model);
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
