@@ -6,8 +6,9 @@ Lightweight OpenGL scene composer.
 
 In no particular order.
 
--   Documentation md file.
--   Implement camera mouse movement (and Mouse class).
+-   Implement ImGui.
+-   Implement importing meshes through ImGui.
+-   Rendering Images.
 -   Implement Logging class.
     -   Remove all std::cout and use Logging class.
 -   Add texture support.

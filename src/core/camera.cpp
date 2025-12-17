@@ -30,8 +30,23 @@ void Camera::move(bool forward, bool backward, bool left, bool right, bool up, b
   view = glm::lookAt(camPos, camPos + camFront, camUp);
 }
 
-/* TO-DO */
-void Camera::rotate(float deltaX, float deltaY, float delta_time) {}
+void Camera::rotate(float deltaX, float deltaY, float delta_time) {
+  const float sensitivity = 0.1f;
+
+  float yaw_offset = deltaX * sensitivity;
+  float pitch_offset = deltaY * sensitivity;
+
+  glm::mat4 yaw_rot = glm::rotate(glm::mat4(1.0f), glm::radians(yaw_offset), camUp);
+  camFront = glm::normalize(glm::vec3(yaw_rot * glm::vec4(camFront, 0.0f)));
+
+  glm::vec3 cam_right = glm::normalize(glm::cross(camFront, camUp));
+
+  glm::mat4 pitch_rot = glm::rotate(glm::mat4(1.0f), glm::radians(pitch_offset), cam_right);
+  camFront = glm::normalize(glm::vec3(pitch_rot * glm::vec4(camFront, 0.0f)));
+
+  cam_right = glm::normalize(glm::cross(camFront, camUp));
+  camUp = glm::normalize(glm::cross(cam_right, camFront));
+}
 
 glm::mat4 Camera::get_view() { return view; }
 

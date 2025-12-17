@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -Iglad/include -Isrc
+CXXFLAGS = -std=c++17 -Iglad/include -Isrc
 GLFWFLAGS = -lglfw -ldl -lGL -lpthread
 IMGUIFLAGS = -limgui
 ASSIMPFLAGS = -lassimp

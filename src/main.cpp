@@ -6,7 +6,7 @@
 int main() {
   Engine engine{1920, 780, "Composer"};
 
-  if (engine.init_application()) {
+  if (engine.init_application() && engine.init_imgui()) {
     Mesh sword = ModelLoader::load("src/core/spada.glb");
     Shader& shader = engine.get_shader();
 
@@ -14,6 +14,12 @@ int main() {
 
     while (!engine.should_close()) {
       engine.begin_frame();
+
+      ImGui::NewFrame();
+
+      ImGui::Begin("Imgui");
+      ImGui::Text("Hello");
+      ImGui::End();
 
       model = glm::rotate(model, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
