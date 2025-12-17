@@ -8,7 +8,7 @@ In no particular order.
 
 -   Documentation md file.
 -   Implement camera mouse movement (and Mouse class).
--   Implement Time (for deltaTime) and Logging class.
+-   Implement Logging class.
     -   Remove all std::cout and use Logging class.
 -   Add texture support.
 

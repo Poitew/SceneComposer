@@ -6,7 +6,7 @@ ASSIMPFLAGS = -lassimp
 
 BIN = ./bin
 OUT = composer.out
-MAIN = ./src/*.cpp ./src/core/*.cpp ./src/renderer/*.cpp ./src/input/*.cpp glad/src/gl.c
+MAIN = ./src/*.cpp ./src/core/*.cpp ./src/renderer/*.cpp ./src/input/*.cpp ./src/utils/*.cpp glad/src/gl.c
 SHADERS = ./shaders/fragment_core.glsl ./shaders/vertex_core.glsl
 
 $(BIN)/$(OUT): $(MAIN)

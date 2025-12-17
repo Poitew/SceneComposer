@@ -13,6 +13,7 @@
 #include "input/keyboard.hpp"
 #include "renderer/mesh.hpp"
 #include "renderer/shader.hpp"
+#include "utils/time.hpp"
 
 class Engine {
  public:

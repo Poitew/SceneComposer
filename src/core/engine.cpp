@@ -41,10 +41,12 @@ bool Engine::init_application() {
 
 void Engine::begin_frame() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  float current = glfwGetTime();
+  Time::update(current);
 
   camera.move(Keyboard::is_down(GLFW_KEY_W), Keyboard::is_down(GLFW_KEY_S),
               Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
-              Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), 0.01f);
+              Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), Time::delta());
 
   shader.set_mat4("view", camera.get_view());
 }
