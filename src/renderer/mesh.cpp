@@ -1,7 +1,7 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices)
-    : vertices{vertices}, indices{indices} {
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture)
+    : vertices{vertices}, indices{indices}, texture{texture} {
   setup();
 }
 
@@ -37,6 +37,10 @@ void Mesh::setup() {
 
 void Mesh::draw(Shader& shader, glm::mat4 model) {
   shader.set_mat4("model", model);
+
+  shader.set_int(texture.type, 0);
+  texture.use(GL_TEXTURE0);
+
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);

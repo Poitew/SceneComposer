@@ -20,6 +20,10 @@ class Shader {
   Shader() = default;
   void use();
   void set_mat4(std::string name, glm::mat4 val);
+  void set_vec4(std::string name, glm::vec4 val);
+  void set_int(std::string name, int val);
+  void set_float(std::string name, float val);
+  void set_bool(std::string name, bool val);
 
  private:
   GLuint vertex_shader;

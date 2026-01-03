@@ -10,11 +10,13 @@
 #include <assimp/scene.h>
 
 #include <assimp/Importer.hpp>
+#include <glm/matrix.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <vector>
 
 #include "renderer/shader.hpp"
+#include "renderer/texture.hpp"
 
 struct Vertex {
   glm::vec3 position;
@@ -24,7 +26,7 @@ struct Vertex {
 
 class Mesh {
  public:
-  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices);
+  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture);
   Mesh() = default;
   ~Mesh();
 
@@ -34,6 +36,7 @@ class Mesh {
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
   glm::vec2 texture_coords;
+  Texture texture;
 
   GLuint VAO;
   GLuint VBO;

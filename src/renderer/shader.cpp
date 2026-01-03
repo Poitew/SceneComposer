@@ -33,7 +33,7 @@ void Shader::compile_shader(std::string& shader_path, GLuint& shader) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, log);
-    std::cout << "Errpr in the shader:\n" << log << "\n";
+    std::cout << "Error in the shader:\n" << log << "\n";
   }
 }
 
@@ -56,6 +56,26 @@ Shader::Shader(std::string vertex_path, std::string fragment_path) {
 void Shader::set_mat4(std::string name, glm::mat4 val) {
   GLuint trans_location = glGetUniformLocation(shader_program, name.c_str());
   glUniformMatrix4fv(trans_location, 1, GL_FALSE, glm::value_ptr(val));
+}
+
+void Shader::set_vec4(std::string name, glm::vec4 val) {
+  GLuint vec4_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniform4fv(vec4_location, GL_FALSE, glm::value_ptr(val));
+}
+
+void Shader::set_int(std::string name, int val) {
+  GLuint int_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniform1i(int_location, val);
+}
+
+void Shader::set_float(std::string name, float val) {
+  GLuint float_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniform1f(float_location, val);
+}
+
+void Shader::set_bool(std::string name, bool val) {
+  GLuint bool_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniform1d(bool_location, val);
 }
 
 void Shader::use() { glUseProgram(shader_program); }

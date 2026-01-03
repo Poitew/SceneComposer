@@ -1,29 +1,24 @@
 #include <glm/matrix.hpp>
 
 #include "core/engine.hpp"
-#include "renderer/model_loader.hpp"
+#include "utils/model_loader.hpp"
 
 int main() {
-  Engine engine{1920, 780, "Composer"};
+  Engine engine{1360, 768, "Composer"};
 
   if (engine.init_application() && engine.init_imgui()) {
-    Mesh sword = ModelLoader::load("src/core/spada.glb");
+    Model test = ModelLoader::load("src/core/test.glb");
+
     Shader& shader = engine.get_shader();
 
     glm::mat4 model = glm::mat4(1.0f);
 
     while (!engine.should_close()) {
       engine.begin_frame();
+      engine.draw_gui();
 
-      ImGui::NewFrame();
-
-      ImGui::Begin("Imgui");
-      ImGui::Text("Hello");
-      ImGui::End();
-
-      model = glm::rotate(model, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-      sword.draw(shader, model);
+      model = glm::rotate(model, glm::radians(Time::delta() * 50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+      test.draw(shader, model);
 
       engine.end_frame();
     }

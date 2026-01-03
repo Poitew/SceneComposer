@@ -1,5 +1,6 @@
 # Architecture
 
+**Not Updated**
 This document describes the architecture for SceneComposer.
 
 ## Code Map

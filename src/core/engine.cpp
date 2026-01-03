@@ -25,6 +25,8 @@ bool Engine::init_application() {
     return false;
   }
 
+  glEnable(GL_DEPTH_TEST);
+
   Mouse::initialize(width, height);
 
   shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
@@ -34,6 +36,7 @@ bool Engine::init_application() {
 
   shader.set_mat4("projection", camera.get_projection());
   shader.set_mat4("view", camera.get_view());
+  shader.set_float("lightIntensity", 1.0f);
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
@@ -77,6 +80,14 @@ void Engine::begin_frame() {
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), Time::delta());
 
   shader.set_mat4("view", camera.get_view());
+}
+
+void Engine::draw_gui() {
+  ImGui::NewFrame();
+
+  ImGui::Begin("Imgui");
+  ImGui::Text("Hello");
+  ImGui::End();
 }
 
 void Engine::end_frame() {

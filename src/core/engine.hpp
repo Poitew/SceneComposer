@@ -28,6 +28,7 @@ class Engine {
   bool init_application();
   bool init_imgui();
   void begin_frame();
+  void draw_gui();
   void end_frame();
   bool should_close();
 

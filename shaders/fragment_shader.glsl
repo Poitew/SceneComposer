@@ -1,6 +1,10 @@
 #version 460 core
+in vec2 text_coord;
 out vec4 FragColor;
 
+uniform sampler2D texture_diffuse;
+uniform float lightIntensity;
+
 void main() {
-    FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    FragColor = texture(texture_diffuse, text_coord) * lightIntensity;
 }
