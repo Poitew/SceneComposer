@@ -17,7 +17,6 @@ int main() {
       engine.begin_frame();
       engine.draw_gui();
 
-      model = glm::rotate(model, glm::radians(Time::delta() * 50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
       test.draw(shader, model);
 
       engine.end_frame();

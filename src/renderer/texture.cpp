@@ -6,6 +6,7 @@
 unsigned char* Texture::load_texture_embeed(unsigned char* memory, int length) {
   unsigned char* data = nullptr;
 
+  stbi_set_flip_vertically_on_load(true);
   data = stbi_load_from_memory(memory, length, &width, &height, &n_channels, 0);
 
   return data;
