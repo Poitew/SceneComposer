@@ -1,5 +1,7 @@
 #include "model_loader.hpp"
 
+unsigned int ModelLoader::id_count = 0;
+
 Model ModelLoader::load(const std::string& filepath) {
   Assimp::Importer importer;
 
@@ -16,13 +18,15 @@ Model ModelLoader::load(const std::string& filepath) {
     std::cerr << "Error when accessing the scene: " << importer.GetErrorString() << "\n";
   }
 
-  std::vector<std::shared_ptr<Mesh>> model;
+  std::vector<std::shared_ptr<Mesh>> meshes;
 
   for (int i = 0; i < scene->mNumMeshes; i++) {
-    model.push_back(process_mesh(scene->mMeshes[i], scene));
+    meshes.push_back(process_mesh(scene->mMeshes[i], scene));
   }
 
-  return Model{model};
+  id_count++;
+
+  return Model{meshes, id_count};
 }
 
 std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* scene) {
@@ -66,6 +70,9 @@ std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* sce
 
       texture = Texture{memory, embeddedTex->mWidth, "texture_diffuse"};
     } else {
+      std::string directory = path.C_Str();
+      directory = directory.substr(0, directory.find_last_of("/\\"));
+
       texture = Texture{path.C_Str(), "texture_diffuse"};
     }
   }

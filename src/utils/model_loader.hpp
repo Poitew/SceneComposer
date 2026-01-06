@@ -20,6 +20,7 @@ class ModelLoader {
 
  private:
   static std::shared_ptr<Mesh> process_mesh(aiMesh* mesh, const aiScene* scene);
+  static unsigned int id_count;
 };
 
 #endif

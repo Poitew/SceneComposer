@@ -35,11 +35,13 @@ void Mesh::setup() {
                         (void*)offsetof(Vertex, texture_coords));
 }
 
-void Mesh::draw(Shader& shader, glm::mat4 model) {
+void Mesh::draw(Shader& shader, glm::mat4 model, bool is_picking) {
   shader.set_mat4("model", model);
 
-  shader.set_int(texture.type, 0);
-  texture.use(GL_TEXTURE0);
+  if (!is_picking) {
+    shader.set_int(texture.type, 0);
+    texture.use(GL_TEXTURE0);
+  }
 
   glBindVertexArray(VAO);
   glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

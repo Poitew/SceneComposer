@@ -32,6 +32,9 @@ bool Engine::init_application() {
   shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
   shader.use();
 
+  picking_shader = {"shaders/picking_vertex.glsl", "shaders/picking_fragment.glsl"};
+  picking_buffer.init(width, height);
+
   camera = {90.0f, width, height, 0.1f, 1000.0f};
 
   shader.set_mat4("projection", camera.get_projection());
@@ -62,8 +65,9 @@ void Engine::begin_frame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glViewport(0, 0, width, height);
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   float current = glfwGetTime();
   Time::update(current);
@@ -79,7 +83,42 @@ void Engine::begin_frame() {
               Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), Time::delta());
 
+  shader.use();
   shader.set_mat4("view", camera.get_view());
+  shader.set_mat4("projection", camera.get_projection());
+
+  picking_shader.use();
+  picking_shader.set_mat4("view", camera.get_view());
+  picking_shader.set_mat4("projection", camera.get_projection());
+}
+
+void Engine::read_click() {
+  if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+
+    int pixelX = (int)xpos;
+    int pixelY = height - (int)ypos;
+
+    float pixel_ID = picking_buffer.read_pixel(pixelX, pixelY);
+
+    if (pixel_ID > 0.0f) {
+      int clicked_ID = (int)pixel_ID;
+      std::cout << "Clicked Object ID: " << clicked_ID << std::endl;
+    }
+  }
+}
+
+void Engine::begin_picking() {
+  picking_buffer.enable_writing();
+  glViewport(0, 0, width, height);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Engine::close_picking() {
+  picking_buffer.disable_writing();
+  glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void Engine::draw_gui() {
@@ -101,6 +140,8 @@ void Engine::end_frame() {
 }
 
 Shader& Engine::get_shader() { return shader; }
+
+Shader& Engine::get_picking_shader() { return picking_shader; }
 
 bool Engine::should_close() { return glfwWindowShouldClose(window); }
 

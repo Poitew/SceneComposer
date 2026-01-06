@@ -15,11 +15,8 @@ unsigned char* Texture::load_texture_embeed(unsigned char* memory, int length) {
 unsigned char* Texture::load_texture(std::string imagepath) {
   unsigned char* data = nullptr;
 
-  std::string directory = imagepath.substr(0, imagepath.find_last_of("/\\"));
-  std::string absolute_path = directory + '/' + imagepath.c_str();
-
   stbi_set_flip_vertically_on_load(true);
-  data = stbi_load(absolute_path.c_str(), &width, &height, &n_channels, 0);
+  data = stbi_load(imagepath.c_str(), &width, &height, &n_channels, 0);
 
   return data;
 }

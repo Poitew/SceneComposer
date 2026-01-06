@@ -30,7 +30,7 @@ class Mesh {
   Mesh() = default;
   ~Mesh();
 
-  void draw(Shader& shader, glm::mat4 model);
+  void draw(Shader& shader, glm::mat4 model, bool is_picking = false);
 
  private:
   std::vector<Vertex> vertices;

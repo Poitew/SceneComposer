@@ -14,6 +14,7 @@
 #include <string>
 
 #include "core/camera.hpp"
+#include "core/picking.hpp"
 #include "input/keyboard.hpp"
 #include "input/mouse.hpp"
 #include "renderer/mesh.hpp"
@@ -27,12 +28,18 @@ class Engine {
 
   bool init_application();
   bool init_imgui();
+
   void begin_frame();
+  void begin_picking();
+  void close_picking();
   void draw_gui();
+  void read_click();
   void end_frame();
+
   bool should_close();
 
   Shader& get_shader();
+  Shader& get_picking_shader();
 
  private:
   GLFWwindow* window;
@@ -41,7 +48,9 @@ class Engine {
   const char* window_name;
 
   Shader shader;
+  Shader picking_shader;
   Camera camera;
+  Picking picking_buffer;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };
