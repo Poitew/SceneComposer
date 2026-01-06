@@ -13,7 +13,7 @@ A section that briefly explains the different directories of the software.
 
 -   A pair of Vertex shader and Fragment shader used to output colors, textures, lights...
 
--   A pair of Vertex shader and Fragment shader used to for 3D Picking...
+-   A pair of Vertex shader and Fragment shader used for 3D Picking.
 
 &nbsp;
 
