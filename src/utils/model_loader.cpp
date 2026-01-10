@@ -2,7 +2,7 @@
 
 unsigned int ModelLoader::id_count = 0;
 
-Model ModelLoader::load(const std::string& filepath) {
+std::shared_ptr<Model> ModelLoader::load(const std::string& filepath) {
   Assimp::Importer importer;
 
   // clang-format off
@@ -26,7 +26,7 @@ Model ModelLoader::load(const std::string& filepath) {
 
   id_count++;
 
-  return Model{meshes, id_count};
+  return std::make_shared<Model>(Model{meshes, id_count});
 }
 
 std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* scene) {

@@ -1,34 +1,51 @@
 #include <glm/matrix.hpp>
+#include <memory>
 
 #include "core/engine.hpp"
+#include "core/scene.hpp"
 #include "utils/model_loader.hpp"
 
 int main() {
   Engine engine{1360, 768, "Composer"};
 
   if (engine.init_application() && engine.init_imgui()) {
-    Model test = ModelLoader::load("src/core/test.glb");
-    Model test_2 = ModelLoader::load("src/core/test.glb");
+    Scene scene;
+    scene.add_model(ModelLoader::load("src/core/test.glb"));
+    scene.add_model(ModelLoader::load("src/core/pyro.glb"));
+
     Shader& shader = engine.get_shader();
     Shader& picking_shader = engine.get_picking_shader();
 
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 model_2 = glm::mat4(1.0f);
-    model_2 = glm::translate(model_2, glm::vec3(5.0f, 0.0f, 0.0f));
+    unsigned int selected_id = 0;
 
     while (!engine.should_close()) {
       engine.begin_frame();
 
       engine.begin_picking();
-      test.draw_picking(picking_shader, model);
-      test_2.draw_picking(picking_shader, model_2);
+      for (auto& model : scene.get_scene_map()) {
+        if (model.second) {
+          model.second->draw_picking(picking_shader);
+        }
+      }
       engine.close_picking();
 
-      test.draw(shader, model);
-      test_2.draw(shader, model_2);
+      for (auto& model : scene.get_scene_map()) {
+        if (model.second) {
+          model.second->draw(shader);
+        }
+      }
 
-      engine.draw_gui();
-      engine.read_click();
+      unsigned int model_id = engine.read_click();
+
+      if (model_id > 0) {
+        selected_id = model_id;
+      }
+
+      Model* model = scene.get_model(selected_id);
+
+      if (model) {
+        engine.draw_picker_gui(model->get_transform());
+      }
       engine.end_frame();
     }
   }

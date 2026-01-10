@@ -64,6 +64,7 @@ bool Engine::init_imgui() {
 void Engine::begin_frame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
 
   glViewport(0, 0, width, height);
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
@@ -92,7 +93,7 @@ void Engine::begin_frame() {
   picking_shader.set_mat4("projection", camera.get_projection());
 }
 
-void Engine::read_click() {
+unsigned int Engine::read_click() {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
@@ -103,10 +104,12 @@ void Engine::read_click() {
     float pixel_ID = picking_buffer.read_pixel(pixelX, pixelY);
 
     if (pixel_ID > 0.0f) {
-      int clicked_ID = (int)pixel_ID;
-      std::cout << "Clicked Object ID: " << clicked_ID << std::endl;
+      unsigned int clicked_ID = (unsigned int)pixel_ID;
+      return clicked_ID;
     }
   }
+
+  return 0;
 }
 
 void Engine::begin_picking() {
@@ -121,11 +124,31 @@ void Engine::close_picking() {
   glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void Engine::draw_gui() {
-  ImGui::NewFrame();
+void Engine::draw_picker_gui(Transform& transform) {
+  ImGui::Begin("Current object");
 
-  ImGui::Begin("Imgui");
-  ImGui::Text("Hello");
+  static bool lock_scale = true;
+
+  ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
+  ImGui::DragFloat3("Rotation", &transform.rotation.x, 0.5f);
+
+  ImGui::Checkbox("Lock Axis", &lock_scale);
+
+  if (lock_scale) {
+    if (ImGui::DragFloat("Scale", &transform.scale.x, 0.01f)) {
+      transform.scale.y = transform.scale.x;
+      transform.scale.z = transform.scale.x;
+    }
+  } else {
+    ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f);
+  }
+
+  if (ImGui::Button("Reset Transform")) {
+    transform.position = glm::vec3(0.0f);
+    transform.rotation = glm::vec3(0.0f);
+    transform.scale = glm::vec3(1.0f);
+  }
+
   ImGui::End();
 }
 
