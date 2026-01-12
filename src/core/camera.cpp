@@ -16,7 +16,7 @@ Camera::Camera(float fov, int width, int height, float near_plane, float far_pla
 
 void Camera::move(bool forward, bool backward, bool left, bool right, bool up, bool down,
                   float delta_time) {
-  const float speed = 5.0f * delta_time;
+  const float speed = 7.5f * delta_time;
 
   if (forward) camPos += speed * camFront;
 

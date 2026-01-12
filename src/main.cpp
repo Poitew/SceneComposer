@@ -35,17 +35,18 @@ int main() {
         }
       }
 
-      unsigned int model_id = engine.read_click();
+      engine.draw_skybox();
 
+      unsigned int model_id = engine.read_click();
       if (model_id > 0) {
         selected_id = model_id;
       }
 
       Model* model = scene.get_model(selected_id);
-
       if (model) {
         engine.draw_picker_gui(model->get_transform());
       }
+
       engine.end_frame();
     }
   }

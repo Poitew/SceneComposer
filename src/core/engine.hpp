@@ -12,6 +12,7 @@
 
 #include <glm/matrix.hpp>
 #include <string>
+#include <vector>
 
 #include "core/camera.hpp"
 #include "core/picking.hpp"
@@ -20,6 +21,7 @@
 #include "renderer/mesh.hpp"
 #include "renderer/model.hpp"
 #include "renderer/shader.hpp"
+#include "renderer/skybox.hpp"
 #include "utils/time.hpp"
 
 class Engine {
@@ -33,6 +35,7 @@ class Engine {
   void begin_frame();
   void begin_picking();
   void close_picking();
+  void draw_skybox();
   void draw_picker_gui(Transform& transform);
   unsigned int read_click();
   void end_frame();
@@ -50,8 +53,9 @@ class Engine {
 
   Shader shader;
   Shader picking_shader;
-  Camera camera;
   Picking picking_buffer;
+  Camera camera;
+  Skybox skybox;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

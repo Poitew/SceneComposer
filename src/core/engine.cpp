@@ -41,6 +41,9 @@ bool Engine::init_application() {
   shader.set_mat4("view", camera.get_view());
   shader.set_float("lightIntensity", 1.0f);
 
+  skybox = {"src/core/skybox",
+            {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"}};
+
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
@@ -70,8 +73,7 @@ void Engine::begin_frame() {
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  float current = glfwGetTime();
-  Time::update(current);
+  Time::update(glfwGetTime());
 
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -123,6 +125,8 @@ void Engine::close_picking() {
   picking_buffer.disable_writing();
   glClear(GL_DEPTH_BUFFER_BIT);
 }
+
+void Engine::draw_skybox() { skybox.draw(camera.get_projection(), camera.get_view()); }
 
 void Engine::draw_picker_gui(Transform& transform) {
   ImGui::Begin("Current object");
