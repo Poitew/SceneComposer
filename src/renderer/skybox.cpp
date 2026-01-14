@@ -30,7 +30,7 @@ Skybox::Skybox(std::string dir, std::vector<std::string> textures_faces) {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-  skybox_shader = {"shaders/skybox_vertex.glsl", "shaders/skybox_fragment.glsl"};
+  skybox_shader = {"shaders/skybox.vs", "shaders/skybox.fs"};
   skybox_shader.use();
   skybox_shader.set_int("skybox", 0);
 

@@ -29,17 +29,12 @@ bool Engine::init_application() {
 
   Mouse::initialize(width, height);
 
-  shader = {"shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl"};
-  shader.use();
+  shader = {"shaders/mesh.vs", "shaders/mesh.fs"};
+  picking_shader = {"shaders/picking.vs", "shaders/picking.fs"};
 
-  picking_shader = {"shaders/picking_vertex.glsl", "shaders/picking_fragment.glsl"};
   picking_buffer.init(width, height);
 
   camera = {90.0f, width, height, 0.1f, 1000.0f};
-
-  shader.set_mat4("projection", camera.get_projection());
-  shader.set_mat4("view", camera.get_view());
-  shader.set_float("lightIntensity", 1.0f);
 
   skybox = {"src/core/skybox",
             {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"}};
