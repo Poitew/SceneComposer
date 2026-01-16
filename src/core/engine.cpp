@@ -36,8 +36,7 @@ bool Engine::init_application() {
 
   camera = {90.0f, width, height, 0.1f, 1000.0f};
 
-  skybox = {"src/core/skybox",
-            {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"}};
+  skybox = {"src/core/sky.hdr"};
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
@@ -121,7 +120,10 @@ void Engine::close_picking() {
   glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void Engine::draw_skybox() { skybox.draw(camera.get_projection(), camera.get_view()); }
+void Engine::draw_skybox() {
+  skybox.draw(camera.get_projection(), camera.get_view());
+  glViewport(0, 0, width, height);
+}
 
 void Engine::draw_picker_gui(Transform& transform) {
   ImGui::Begin("Current object");
