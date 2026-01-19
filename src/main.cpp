@@ -10,16 +10,18 @@ int main() {
 
   if (engine.init_application() && engine.init_imgui()) {
     Scene scene;
-    scene.add_model(ModelLoader::load("src/core/test.glb"));
-    scene.add_model(ModelLoader::load("src/core/pyro.glb"));
 
     Shader& shader = engine.get_shader();
     Shader& picking_shader = engine.get_picking_shader();
 
     unsigned int selected_id = 0;
+    std::string model_path;
+    std::string sky_path;
 
     while (!engine.should_close()) {
       engine.begin_frame();
+      model_path.clear();
+      sky_path.clear();
 
       engine.begin_picking();
       for (auto& model : scene.get_scene_map()) {
@@ -45,6 +47,17 @@ int main() {
       Model* model = scene.get_model(selected_id);
       if (model) {
         engine.draw_picker_gui(model->get_transform());
+      }
+
+      engine.draw_main_bar_gui(model_path, sky_path);
+      engine.draw_hierarchy_gui();
+
+      if (!model_path.empty() || model_path != "") {
+        scene.add_model(ModelLoader::load(model_path));
+      }
+
+      if (!sky_path.empty() || sky_path != "") {
+        engine.load_sky(sky_path);
       }
 
       engine.end_frame();

@@ -36,11 +36,16 @@ bool Engine::init_application() {
 
   camera = {90.0f, width, height, 0.1f, 1000.0f};
 
-  skybox = {"src/core/sky.hdr"};
+  skybox = {"assets/sky.hdr"};
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
+
+  if (NFD_Init() != NFD_OKAY) {
+    std::cerr << "Failed to init NFD: " << NFD_GetError() << "\n";
+    return false;
+  }
 
   return true;
 }
@@ -153,6 +158,70 @@ void Engine::draw_picker_gui(Transform& transform) {
   ImGui::End();
 }
 
+void Engine::draw_main_bar_gui(std::string& model_path, std::string& sky_path) {
+  bool is_model_import_open = false;
+  bool is_sky_import_open = false;
+
+  ImGui::BeginMainMenuBar();
+
+  if (ImGui::BeginMenu("Importer")) {
+    if (ImGui::MenuItem("Import Model (obj, fbx, glb, gltf)")) {
+      is_model_import_open = true;
+    }
+
+    if (ImGui::MenuItem("Import Sky (hdr)")) {
+      is_sky_import_open = true;
+    }
+
+    ImGui::EndMenu();
+  }
+
+  ImGui::EndMainMenuBar();
+
+  nfdu8char_t* out_path = nullptr;
+  const int FILTER_COUNT = 1;
+  nfdopendialogu8args_t args = {0};
+
+  if (is_model_import_open) {
+    nfdu8filteritem_t filters[FILTER_COUNT] = {{"Models", "obj,fbx,glb,gltf"}};
+    args.filterList = filters;
+    args.filterCount = FILTER_COUNT;
+
+    if (NFD_OpenDialogU8_With(&out_path, &args) == NFD_OKAY) {
+      model_path = out_path;
+      NFD_FreePathU8(out_path);
+    }
+  }
+  if (is_sky_import_open) {
+    nfdu8filteritem_t filters[FILTER_COUNT] = {{"Sky", "hdr"}};
+    args.filterList = filters;
+    args.filterCount = FILTER_COUNT;
+
+    if (NFD_OpenDialogU8_With(&out_path, &args) == NFD_OKAY) {
+      sky_path = out_path;
+      NFD_FreePathU8(out_path);
+    }
+  }
+}
+
+void Engine::draw_hierarchy_gui() {
+  ImGui::Begin("File selector");
+
+  static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+  if (ImGui::TreeNodeEx("Scene", flags)) {
+    ImGui::Text("Element one");
+    ImGui::Text("Element two");
+    ImGui::Text("Element three");
+    ImGui::Text("Element four");
+
+    ImGui::TreePop();
+  }
+
+  ImGui::End();
+}
+
+void Engine::load_sky(std::string path) { skybox = {path}; }
+
 void Engine::end_frame() {
   Mouse::reset_deltas();
 
@@ -174,4 +243,5 @@ Engine::~Engine() {
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
+  NFD_Quit();
 }

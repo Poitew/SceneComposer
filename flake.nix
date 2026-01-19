@@ -10,10 +10,13 @@
         pkgs = nixpkgs.legacyPackages.${system};
     in {
         devShells.${system}.default = pkgs.mkShell {
+            strictDeps = true;
+
             buildInputs = with pkgs; [
                 gcc
-
                 clang-tools
+
+                gtk3
 
                 glfw
                 glm
@@ -21,9 +24,12 @@
                 stb
                 imgui
                 assimp
+                nativefiledialog-extended
             ];
 
             shellHook = ''
+                export XDG_DATA_DIRS=$GSETTINGS_SCHEMAS_PATH
+
                 if [ ! -d glad/include ]; then
                     mkdir -p glad
                     python -m glad --api gl:core=4.6 --out-path glad c
@@ -34,6 +40,7 @@
                     clang-format -style=Google -dump-config > .clang-format
                 fi
             '';
+            
         };
     };
 }

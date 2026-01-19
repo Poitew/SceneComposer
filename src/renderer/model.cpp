@@ -1,6 +1,9 @@
 #include "model.hpp"
 
-Model::Model(std::vector<std::shared_ptr<Mesh>> model, unsigned int id) : model{model}, id{id} {};
+Model::Model(std::vector<std::shared_ptr<Mesh>> model, unsigned int id, std::string name)
+    : model{model}, id{id}, name{name} {
+  std::cout << name;
+};
 
 void Model::draw(Shader& shader) {
   shader.use();

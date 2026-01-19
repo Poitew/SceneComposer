@@ -29,7 +29,7 @@ struct Transform {
 
 class Model {
  public:
-  Model(std::vector<std::shared_ptr<Mesh>> model, unsigned int id);
+  Model(std::vector<std::shared_ptr<Mesh>> model, unsigned int id, std::string name);
   void draw(Shader& shader);
   void draw_picking(Shader& shader);
 
@@ -41,6 +41,7 @@ class Model {
   std::vector<std::shared_ptr<Mesh>> model;
   Transform transform;
   unsigned int id;
+  std::string name;
 };
 
 #endif

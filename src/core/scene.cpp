@@ -10,7 +10,7 @@ Model* Scene::get_model(unsigned int id) {
 
 void Scene::add_model(std::shared_ptr<Model> model) {
   unsigned int id = model->get_id();
-  scene[id] = (model);
+  scene[id] = model;
 }
 
 std::unordered_map<unsigned int, std::shared_ptr<Model>>& Scene::get_scene_map() { return scene; }

@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <nfd.h>
 
 #include <glm/matrix.hpp>
 #include <string>
@@ -37,6 +38,9 @@ class Engine {
   void close_picking();
   void draw_skybox();
   void draw_picker_gui(Transform& transform);
+  void draw_main_bar_gui(std::string& model_path, std::string& sky_path);
+  void draw_hierarchy_gui();
+  void load_sky(std::string path);
   unsigned int read_click();
   void end_frame();
 
