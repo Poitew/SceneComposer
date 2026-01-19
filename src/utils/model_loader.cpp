@@ -25,7 +25,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filepath) {
   }
 
   id_count++;
-  std::string name = scene->mName.C_Str();
+  std::string name = scene->mRootNode->mName.C_Str();
 
   return std::make_shared<Model>(Model{meshes, id_count, name});
 }

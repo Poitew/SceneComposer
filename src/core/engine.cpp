@@ -173,6 +173,10 @@ void Engine::draw_main_bar_gui(std::string& model_path, std::string& sky_path) {
       is_sky_import_open = true;
     }
 
+    if (ImGui::MenuItem("Reset Sky")) {
+      sky_path = "assets/sky.hdr";
+    }
+
     ImGui::EndMenu();
   }
 
@@ -204,15 +208,19 @@ void Engine::draw_main_bar_gui(std::string& model_path, std::string& sky_path) {
   }
 }
 
-void Engine::draw_hierarchy_gui() {
-  ImGui::Begin("File selector");
+void Engine::draw_hierarchy_gui(CScene& scene, unsigned int& selected_id) {
+  ImGui::Begin("Scene Hierarchy");
 
   static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+
   if (ImGui::TreeNodeEx("Scene", flags)) {
-    ImGui::Text("Element one");
-    ImGui::Text("Element two");
-    ImGui::Text("Element three");
-    ImGui::Text("Element four");
+    for (auto& model : scene) {
+      std::string label = model.second->get_name() + "##" + std::to_string(selected_id);
+
+      if (ImGui::Selectable(label.c_str(), selected_id == model.first)) {
+        selected_id = model.first;
+      }
+    }
 
     ImGui::TreePop();
   }

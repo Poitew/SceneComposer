@@ -50,7 +50,7 @@ int main() {
       }
 
       engine.draw_main_bar_gui(model_path, sky_path);
-      engine.draw_hierarchy_gui();
+      engine.draw_hierarchy_gui(scene.get_scene_map(), selected_id);
 
       if (!model_path.empty() || model_path != "") {
         scene.add_model(ModelLoader::load(model_path));

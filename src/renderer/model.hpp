@@ -34,6 +34,7 @@ class Model {
   void draw_picking(Shader& shader);
 
   unsigned int get_id();
+  std::string& get_name();
   glm::mat4 get_model_matrix();
   Transform& get_transform();
 

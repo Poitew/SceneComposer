@@ -7,12 +7,14 @@
 
 #include "renderer/model.hpp"
 
+using CScene = std::unordered_map<unsigned int, std::shared_ptr<Model>>;
+
 class Scene {
  private:
-  std::unordered_map<unsigned int, std::shared_ptr<Model>> scene;
+  CScene scene;
 
  public:
-  std::unordered_map<unsigned int, std::shared_ptr<Model>>& get_scene_map();
+  CScene& get_scene_map();
   Model* get_model(unsigned int id);
   void add_model(std::shared_ptr<Model> model);
 };

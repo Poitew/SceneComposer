@@ -1,9 +1,7 @@
 #include "model.hpp"
 
 Model::Model(std::vector<std::shared_ptr<Mesh>> model, unsigned int id, std::string name)
-    : model{model}, id{id}, name{name} {
-  std::cout << name;
-};
+    : model{model}, id{id}, name{name} {};
 
 void Model::draw(Shader& shader) {
   shader.use();
@@ -23,6 +21,8 @@ void Model::draw_picking(Shader& picking_shader) {
 }
 
 unsigned int Model::get_id() { return id; }
+
+std::string& Model::get_name() { return name; }
 
 glm::mat4 Model::get_model_matrix() { return transform.get_matrix(); }
 

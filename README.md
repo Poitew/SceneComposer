@@ -15,3 +15,5 @@ In no particular order.
 - Cleanup class.
 
 PR's are welcome.
+
+Default HDRI is from <a href="https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky">polyhaven</a>

@@ -25,6 +25,8 @@
 #include "renderer/skybox.hpp"
 #include "utils/time.hpp"
 
+using CScene = std::unordered_map<unsigned int, std::shared_ptr<Model>>;
+
 class Engine {
  public:
   Engine(int width, int height, const char* window_name);
@@ -39,7 +41,7 @@ class Engine {
   void draw_skybox();
   void draw_picker_gui(Transform& transform);
   void draw_main_bar_gui(std::string& model_path, std::string& sky_path);
-  void draw_hierarchy_gui();
+  void draw_hierarchy_gui(CScene& scene, unsigned int& selected_id);
   void load_sky(std::string path);
   unsigned int read_click();
   void end_frame();
