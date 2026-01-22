@@ -1,6 +1,5 @@
 # Architecture
 
-**Not Updated**
 This document describes the architecture for SceneComposer.
 
 ## Code Map
@@ -11,9 +10,13 @@ A section that briefly explains the different directories of the software.
 
 **`shaders/`**
 
--   A pair of Vertex shader and Fragment shader used to output colors, textures, lights...
+- `mesh.vs` and `mesh.fs` are used to output colors, textures, lights...
 
--   A pair of Vertex shader and Fragment shader used for 3D Picking.
+- `picking.vs` and `picking.fs` are used for 3D Picking.
+
+- `skybox.vs` and `skybox.fs` are used to display a cubemap texture onto a skybox, and move it with the camera.
+
+- `to_cubemap.vs` and `to_cubemap.fs` are used to convert an HDRI to a cubemap.
 
 &nbsp;
 
@@ -25,22 +28,24 @@ Main directory that contains most of the source code.
 **`src/core`**  
 The core of the software.
 
--   The `Engine` class takes care of initializing the application, starting with libraries like GLFW and GLAD (but not limited to).  
-    It then moves forward to initialize custom classes owned by the engine, such as `Camera`, `Shader`, `Picking`.
+- The `Engine` class takes care of initializing libraries, classes, shaders...
+  It also holds functions related to the rendering loop such as GUI drawing, meshes rendering...
 
--   The `Camera` class is responsible for the movement of the scene, and the general perspective of the camera.  
-    As stated before, the camera is owned by the engine, but it actually is logically independent (meaning it doesn't really need the engine to work).
+- The `Camera` class is responsible for the movement of the scene, and the general perspective of the camera.  
+  Owned by the engine but logically independent.
 
--   The `Picking` class is used to take informations from the frame buffer object (fbo).
-    More precisely, the fbo can be seen as a grid of 0, and models ID. Where a pixel of a model is drawn, instead of the color, its ID is saved. When we click on the screen we get the coordinates of the click and check if on that specific coordinates on the grid field an ID is saved.
+- The `Picking` class is used to take information from the frame buffer object (fbo).
+  More precisely, the fbo can be seen as a grid of 0 and models ID. Where a pixel of a model is drawn, instead of the color we draw its ID. When we click on the screen we get the coordinates of the click and check if an ID is saved at those specific coordinates. We can then use this ID to operate on a specific model.
+
+- The `Scene` class holds a `map<id, model>`, and a set of functions to operate on said data structure.
 
 &nbsp;
 
 **`src/input`**
 
--   The `Keyboard` static class takes care of handling long presses correctly, as it is not provided by OpenGL.
+- The `Keyboard` static class takes care of handling long presses correctly, as it is not provided by OpenGL.
 
--   The `Mouse` static class takes care of handling mouse position and movemente correctly.
+- The `Mouse` static class takes care of handling mouse position and movement correctly.
 
 &nbsp;
 
@@ -48,42 +53,46 @@ The core of the software.
 
 Contains classes related to the rendering of objects.
 
--   The `Mesh` class is a loading-library-indipendent class that takes care of initializing buffers and drawing the final mesh to
-    output. Because of how **_AssImp_** works, a single 3d model will get split in multiple meshes depending on their material.
+- The `Mesh` class is a loading-library-independent class that takes care of initializing buffers and drawing the final mesh to
+  output. Because of how **_AssImp_** works, a single 3d model will get split in multiple meshes depending on their material.
 
--   The `Model` class is a container of multiple related meshes. Its only job is to correctly store and draw said meshes.
-    Each model has its own unique ID used in the 3D picking.
+- The `Model` class is a container of multiple related meshes. Its only job is to correctly store and draw said meshes.
+  Each model has its own unique ID, and a name.
 
--   The `Shader` class takes care of the Vertex shader and Fragment shader.
-    It also exposes a set of functions, like `set_mat4()` to set uniform variables.
+- The `Shader` class takes care of handling a pair of Vertex shader and Fragment shader.
+  It also exposes a set of functions, like `set_mat4()` to set uniform variables.
 
--   The `Texture` class load, stores, and puts a single texture into memory. Said texture is stored in a single `Mesh` and can/will be used in the rendering loop.
+- The `Skybox` class is used to render a cube and display a cubemap on it (While also converting the HDRI input file into a cubemap).
+
+- The `Texture` class loads, stores, and puts a single texture into memory. Said texture is stored in a single `Mesh` and can/will be used in the rendering loop.
 
 &nbsp;
 
 **`src/utils`**
 
-Set of classes not strictly necessary for the software to work.
+Set of classes not strictly related to the software logic.
 
--   The `Time` static class provides an easy way to access the delta time.
+- The `Time` static class provides an easy way to access the delta time.
 
--   The `ModelLoader` static class internally uses **_AssImp_** to get the all the meshes from a given filepath.  
-    It then creates and returns a `Model` object containing an array of `Mesh`.
+- The `ModelLoader` static class internally uses **_AssImp_** to get the all the meshes from a given filepath.  
+  It then creates and returns a `Model`.
 
 &nbsp;
 
 **`src/main.cpp`**
 
-The entry point of the app. An object of class `Engine` is initialized and the main loop starts.
+The entry point of the app. An object of class `Engine` and one of class `Scene` are initialized and the main loop starts.
 
-The whole pipeline is:
+&nbsp;
 
-1. `Engine` is initialized.
-2. `ModelLoader` loads a model.
-3. The rendering loops starts.
-4. The function `Engine::begin_frame()` takes care of basic OpenGL boilerplate stuff, camera (mouse and keyboard) movement, and updating each shader.
-5. Models are loaded in the frame buffer objects.
-6. Models are rendered on the screen.
+Rendering pipeline:
+
+1. `Engine` and `Scene` are initialized.
+2. The rendering loop starts.
+3. `Engine::begin_frame()` is called.
+4. Models are loaded in the frame buffer objects.
+5. Models and skybox are rendered on the screen.
+6. The engine listens for a click and sees if it matches with a model ID.
 7. The UI is drawn.
-8. The engine listen for a click and see if it matches with a model ID.
-9. End the frame, some boilerplate ImGui and OpenGL stuff.
+8. Loads a new model or skybox if a change in the input variables is detected.
+9. `Engine::end_frame()` is called.
