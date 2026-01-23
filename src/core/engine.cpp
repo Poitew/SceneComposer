@@ -130,15 +130,13 @@ void Engine::draw_skybox() {
   glViewport(0, 0, width, height);
 }
 
-void Engine::draw_picker_gui(Transform& transform) {
-  ImGui::Begin("Current object");
+void Engine::draw_object_properties_panel(Transform& transform, bool& hidden) {
+  ImGui::Begin("Object Properties");
 
   static bool lock_scale = true;
 
   ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
   ImGui::DragFloat3("Rotation", &transform.rotation.x, 0.5f);
-
-  ImGui::Checkbox("Lock Axis", &lock_scale);
 
   if (lock_scale) {
     if (ImGui::DragFloat("Scale", &transform.scale.x, 0.01f)) {
@@ -149,6 +147,10 @@ void Engine::draw_picker_gui(Transform& transform) {
     ImGui::DragFloat3("Scale", &transform.scale.x, 0.01f);
   }
 
+  ImGui::Checkbox("Lock Axis", &lock_scale);
+  ImGui::SameLine();
+  ImGui::Checkbox("Hide model", &hidden);
+
   if (ImGui::Button("Reset Transform")) {
     transform.position = glm::vec3(0.0f);
     transform.rotation = glm::vec3(0.0f);
@@ -158,7 +160,7 @@ void Engine::draw_picker_gui(Transform& transform) {
   ImGui::End();
 }
 
-void Engine::draw_main_bar_gui(std::string& model_path, std::string& sky_path) {
+void Engine::draw_main_bar(std::string& model_path, std::string& sky_path) {
   bool is_model_import_open = false;
   bool is_sky_import_open = false;
 

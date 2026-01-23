@@ -39,8 +39,8 @@ class Engine {
   void begin_picking();
   void close_picking();
   void draw_skybox();
-  void draw_picker_gui(Transform& transform);
-  void draw_main_bar_gui(std::string& model_path, std::string& sky_path);
+  void draw_object_properties_panel(Transform& transform, bool& hidden);
+  void draw_main_bar(std::string& model_path, std::string& sky_path);
   void draw_hierarchy_gui(CScene& scene, unsigned int& selected_id);
   void load_sky(std::string path);
   unsigned int read_click();

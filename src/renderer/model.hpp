@@ -37,12 +37,14 @@ class Model {
   std::string& get_name();
   glm::mat4 get_model_matrix();
   Transform& get_transform();
+  bool& get_hidden_flag();
 
  private:
   std::vector<std::shared_ptr<Mesh>> model;
   Transform transform;
   unsigned int id;
   std::string name;
+  bool hidden = false;
 };
 
 #endif
