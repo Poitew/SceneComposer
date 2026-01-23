@@ -57,26 +57,37 @@ std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* sce
     }
   }
 
+  glm::vec4 material_color;
+
   if (mesh->mMaterialIndex >= 0) {
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
     aiString path;
-    material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-    Texture diffuse_texture{};
+    aiColor4D color(1.0f, 1.0f, 1.0f, 1.0f);
 
-    if (path.C_Str()[0] == '*') {
-      int index = std::stoi(&path.C_Str()[1]);
-      aiTexture* embeddedTex = scene->mTextures[index];
-      unsigned char* memory = reinterpret_cast<unsigned char*>(embeddedTex->pcData);
+    if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS) {
+      Texture diffuse_texture{};
 
-      texture = Texture{memory, embeddedTex->mWidth, "texture_diffuse"};
-    } else {
-      std::string directory = path.C_Str();
-      directory = directory.substr(0, directory.find_last_of("/\\"));
+      if (path.C_Str()[0] == '*') {
+        int index = std::stoi(&path.C_Str()[1]);
+        aiTexture* embeddedTex = scene->mTextures[index];
+        unsigned char* memory = reinterpret_cast<unsigned char*>(embeddedTex->pcData);
 
-      texture = Texture{path.C_Str(), "texture_diffuse"};
+        texture = Texture{memory, embeddedTex->mWidth, "texture_diffuse"};
+      } else {
+        std::string directory = path.C_Str();
+        directory = directory.substr(0, directory.find_last_of("/\\"));
+
+        texture = Texture{path.C_Str(), "texture_diffuse"};
+      }
     }
+
+    if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) != AI_SUCCESS) {
+      material->Get(AI_MATKEY_BASE_COLOR, color);
+    }
+
+    material_color = glm::vec4(color.r, color.g, color.b, color.a);
   }
 
-  return std::make_shared<Mesh>(vertices, indices, texture);
+  return std::make_shared<Mesh>(vertices, indices, texture, material_color);
 }

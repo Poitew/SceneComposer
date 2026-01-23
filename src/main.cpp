@@ -10,6 +10,9 @@ int main() {
 
   if (engine.init_application() && engine.init_imgui()) {
     Scene scene;
+    scene.add_model(ModelLoader::load("/home/poitew/blender/pyro.glb"));
+    scene.add_model(ModelLoader::load("/home/poitew/blender/cartoon_house/house.fbx"));
+    scene.add_model(ModelLoader::load("/home/poitew/blender/test.glb"));
 
     Shader& shader = engine.get_shader();
     Shader& picking_shader = engine.get_picking_shader();

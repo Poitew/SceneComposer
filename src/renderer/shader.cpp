@@ -58,6 +58,11 @@ void Shader::set_mat4(std::string name, glm::mat4 val) {
   glUniformMatrix4fv(trans_location, 1, GL_FALSE, glm::value_ptr(val));
 }
 
+void Shader::set_vec4(std::string name, glm::vec4 val) {
+  GLuint vec_location = glGetUniformLocation(shader_program, name.c_str());
+  glUniform4fv(vec_location, 1, glm::value_ptr(val));
+}
+
 void Shader::set_int(std::string name, int val) {
   GLuint int_location = glGetUniformLocation(shader_program, name.c_str());
   glUniform1i(int_location, val);

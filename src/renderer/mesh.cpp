@@ -1,7 +1,8 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture)
-    : vertices{vertices}, indices{indices}, texture{texture} {
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture,
+           glm::vec4 material_color)
+    : vertices{vertices}, indices{indices}, texture{texture}, material_color{material_color} {
   setup();
 }
 
@@ -38,7 +39,12 @@ void Mesh::setup() {
 void Mesh::draw(Shader& shader, glm::mat4 model, bool is_picking) {
   shader.set_mat4("model", model);
 
-  if (!is_picking) {
+  bool has_texture = texture.is_valid();
+
+  shader.set_int("use_texture", has_texture);
+  shader.set_vec4("material_color", material_color);
+
+  if (!is_picking && has_texture) {
     shader.set_int(texture.type, 0);
     texture.use(GL_TEXTURE0);
   }

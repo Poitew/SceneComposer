@@ -24,8 +24,10 @@ class Texture {
   void use(GLenum text_num);
   GLuint get_texture();
 
+  bool is_valid();
+
  private:
-  GLuint texture;
+  GLuint texture = 0;
   int width;
   int height;
   int n_channels;

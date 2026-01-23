@@ -5,6 +5,7 @@
 #include <assimp/scene.h>
 
 #include <assimp/Importer.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 #include <memory>
 #include <string>

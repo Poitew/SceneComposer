@@ -12,7 +12,7 @@
 #include <assimp/Importer.hpp>
 #include <glm/matrix.hpp>
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 #include <vector>
 
 #include "renderer/shader.hpp"
@@ -26,7 +26,8 @@ struct Vertex {
 
 class Mesh {
  public:
-  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture);
+  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, Texture texture,
+       glm::vec4 material_color);
   Mesh() = default;
   ~Mesh();
 
@@ -37,6 +38,7 @@ class Mesh {
   std::vector<GLuint> indices;
   glm::vec2 texture_coords;
   Texture texture;
+  glm::vec4 material_color;
 
   GLuint VAO;
   GLuint VBO;

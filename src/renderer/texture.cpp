@@ -40,8 +40,10 @@ void Texture::check_data(unsigned char* data) {
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
     glGenerateMipmap(GL_TEXTURE_2D);
+
+    std::cout << "Texture loaded correctly \n\n";
   } else {
-    std::cout << "Failed to load texture \n";
+    std::cout << "Failed to load texture \n\n";
   }
 }
 
@@ -49,6 +51,7 @@ Texture::Texture(std::string imagepath, std::string type) : type{type} {
   init_texture();
 
   unsigned char* data = load_texture(imagepath);
+  std::cout << "Loading texture at path: " << imagepath << "\n";
 
   check_data(data);
 
@@ -71,3 +74,5 @@ void Texture::use(GLenum text_num) {
 }
 
 GLuint Texture::get_texture() { return texture; }
+
+bool Texture::is_valid() { return texture > 0; }
