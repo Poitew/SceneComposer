@@ -9,7 +9,7 @@ class Camera {
   Camera(float fov, int width, int height, float near_plane, float far_plane);
   Camera() = default;
 
-  void move(bool forward, bool backward, bool left, bool right, bool up, bool down,
+  void move(bool forward, bool backward, bool left, bool right, bool up, bool down, bool shift,
             float delta_time);
 
   void rotate(float deltaX, float deltaY, float delta_time);
@@ -26,6 +26,7 @@ class Camera {
 
   float yaw;
   float pitch;
+  float speed;
 };
 
 #endif

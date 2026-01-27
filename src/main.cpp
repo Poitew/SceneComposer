@@ -1,6 +1,3 @@
-#include <glm/matrix.hpp>
-#include <memory>
-
 #include "core/engine.hpp"
 #include "core/scene.hpp"
 #include "utils/model_loader.hpp"

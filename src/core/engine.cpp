@@ -83,7 +83,8 @@ void Engine::begin_frame() {
 
   camera.move(Keyboard::is_down(GLFW_KEY_W), Keyboard::is_down(GLFW_KEY_S),
               Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
-              Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q), Time::delta());
+              Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q),
+              Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), Time::delta());
 
   shader.use();
   shader.set_mat4("view", camera.get_view());

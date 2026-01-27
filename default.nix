@@ -26,6 +26,7 @@ in
 
         buildPhase = ''
             runHook preBuild
+            make clean
             make
             runHook postBuild
         '';
