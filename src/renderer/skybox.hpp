@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "renderer/shader.hpp"
+#include "utils/logger.hpp"
 
 class Skybox {
  public:

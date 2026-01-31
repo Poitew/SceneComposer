@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 
+#include "utils/logger.hpp"
+
 class Texture {
  public:
   std::string type;

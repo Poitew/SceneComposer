@@ -12,7 +12,7 @@ std::string Shader::load_shader(std::string filename) {
     buffer << file.rdbuf();
     ret = buffer.str();
   } else {
-    std::cout << "Could not open shader\n";
+    Logger::log("Could not open shader: " + filename);
   }
 
   file.close();
@@ -33,7 +33,7 @@ void Shader::compile_shader(std::string& shader_path, GLuint& shader) {
   glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(shader, 512, NULL, log);
-    std::cout << "Error in the shader:\n" << log << "\n";
+    Logger::log("Error in the shader:\n" + std::string(log));
   }
 }
 

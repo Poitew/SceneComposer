@@ -41,9 +41,9 @@ void Texture::check_data(unsigned char* data) {
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    std::cout << "Texture loaded correctly \n\n";
+    Logger::log("Texture loaded correctly");
   } else {
-    std::cout << "Failed to load texture \n\n";
+    Logger::log("Failed to load texture");
   }
 }
 
@@ -51,7 +51,7 @@ Texture::Texture(std::string imagepath, std::string type) : type{type} {
   init_texture();
 
   unsigned char* data = load_texture(imagepath);
-  std::cout << "Loading texture at path: " << imagepath << "\n";
+  Logger::log("Loading texture at path: " + imagepath);
 
   check_data(data);
 

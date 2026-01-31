@@ -56,6 +56,7 @@ bool Engine::init_imgui() {
 
   ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
   ImGui_ImplOpenGL3_Init();
   ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -67,6 +68,7 @@ void Engine::begin_frame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
+  ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
   glViewport(0, 0, width, height);
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
@@ -214,20 +216,61 @@ void Engine::draw_main_bar(std::string& model_path, std::string& sky_path) {
 void Engine::draw_hierarchy_gui(CScene& scene, unsigned int& selected_id) {
   ImGui::Begin("Scene Hierarchy");
 
-  static ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+  static ImGuiTreeNodeFlags root_flags =
+      ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_DrawLinesToNodes;
 
-  if (ImGui::TreeNodeEx("Scene", flags)) {
+  if (ImGui::TreeNodeEx("Scene", root_flags)) {
     for (auto& model : scene) {
-      std::string label = model.second->get_name() + "##" + std::to_string(selected_id);
+      // The label id ## doesn't work
+      std::string label = model.second->get_name() + "##" + std::to_string(model.first);
 
-      if (ImGui::Selectable(label.c_str(), selected_id == model.first)) {
+      ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf;
+
+      if (selected_id == model.first) {
+        leaf_flags |= ImGuiTreeNodeFlags_Selected;
+      }
+
+      ImGui::TreeNodeEx(label.c_str(), leaf_flags);
+
+      if (ImGui::IsItemClicked()) {
         selected_id = model.first;
       }
+
+      ImGui::TreePop();
     }
 
     ImGui::TreePop();
   }
 
+  ImGui::End();
+}
+
+void Engine::draw_bottom_log_panel() {
+  ImGui::Begin("System Log");
+  auto logs = Logger::get_logs();
+
+  if (ImGui::Button("Clear")) {
+    logs.clear();
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Copy to Clipboard")) {
+    ImGui::LogToClipboard();
+  }
+
+  ImGui::BeginChild("ScrollingRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+  ImGuiListClipper clipper;
+  clipper.Begin(logs.size());
+
+  while (clipper.Step()) {
+    for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+      ImGui::TextUnformatted(logs[i].c_str());
+    }
+  }
+
+  if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) ImGui::SetScrollHereY(1.0f);
+
+  ImGui::EndChild();
   ImGui::End();
 }
 

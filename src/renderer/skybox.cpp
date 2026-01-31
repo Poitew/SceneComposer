@@ -70,7 +70,7 @@ void Skybox::load_and_convert_hdri(std::string& hdr_path) {
     convert_hdri(hdr2D);
     stbi_image_free(data);
   } else {
-    std::cout << "Cubemap texture failed to load at path: " << hdr_path << std::endl;
+    Logger::log("Cubemap texture failed to load at path: " + hdr_path);
   }
 }
 

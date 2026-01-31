@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+#include "utils/logger.hpp"
+
 class Picking {
  public:
   bool init(int width, int height);

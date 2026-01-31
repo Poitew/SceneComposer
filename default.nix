@@ -9,6 +9,24 @@ in
             wrapGAppsHook3
         ];
 
+        imgui-docking = pkgs.imgui.overrideAttrs (oldAttrs: {
+            version = "1.92.5-docking";
+            src = pkgs.fetchFromGitHub {
+                owner = "ocornut";
+                repo = "imgui";
+                rev = "docking";
+                hash = "sha256-vSmZO40k5gO5Db2iKa8uNnYHtGzfmGAPHnhU22E4/rg="; 
+            };
+
+            buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [
+                libX11
+                libXcursor
+                libXinerama
+                libXext
+                libXrandr
+            ]);
+        });
+
         buildInputs = with pkgs; [
                 gcc
                 clang-tools
@@ -19,7 +37,7 @@ in
                 glm
                 python313Packages.glad2
                 stb
-                imgui
+                imgui-docking
                 assimp
                 nativefiledialog-extended
             ];

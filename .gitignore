@@ -45,3 +45,6 @@ glad/
 
 # Nix
 result
+
+#imgui
+imgui.ini

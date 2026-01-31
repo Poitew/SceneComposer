@@ -8,6 +8,25 @@
     outputs = { self, nixpkgs }: let 
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
+
+        imgui-docking = pkgs.imgui.overrideAttrs (oldAttrs: {
+            version = "1.92.5-docking";
+            src = pkgs.fetchFromGitHub {
+                owner = "ocornut";
+                repo = "imgui";
+                rev = "docking";
+                hash = "sha256-vSmZO40k5gO5Db2iKa8uNnYHtGzfmGAPHnhU22E4/rg="; 
+            };
+
+            buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [
+                libX11
+                libXcursor
+                libXinerama
+                libXext
+                libXrandr
+            ]);
+        });
+
     in {
         devShells.${system}.default = pkgs.mkShell {
             strictDeps = true;
@@ -22,7 +41,7 @@
                 glm
                 python313Packages.glad2
                 stb
-                imgui
+                imgui-docking
                 assimp
                 nativefiledialog-extended
             ];

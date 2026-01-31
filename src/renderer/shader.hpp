@@ -15,6 +15,8 @@
 #include <streambuf>
 #include <string>
 
+#include "utils/logger.hpp"
+
 class Shader {
  public:
   Shader(std::string vertex_shader, std::string fragment_shader);

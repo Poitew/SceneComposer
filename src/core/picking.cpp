@@ -22,7 +22,8 @@ bool Picking::init(int width, int height) {
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
   if (status != GL_FRAMEBUFFER_COMPLETE) {
-    std::cout << "Status: " << status;
+    std::string entry = "Status: " + std::to_string(status);
+    Logger::log(entry);
     return false;
   }
 

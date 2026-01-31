@@ -6,12 +6,10 @@ Lightweight OpenGL scene composer and renderer [WIP].
 
 In no particular order.
 
+- lightning
 - Infinite grid.
 - Rendering Images.
-- Implement Logging class.
-    - Remove all std::cout and use Logging class.
 - Make texture support better.
-- Cleanup class.
 
 PR's are welcome.
 

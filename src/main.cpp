@@ -37,9 +37,7 @@ int main() {
       engine.draw_skybox();
 
       unsigned int model_id = engine.read_click();
-      if (model_id > 0) {
-        selected_id = model_id;
-      }
+      selected_id = model_id > 0 ? model_id : selected_id;
 
       Model* model = scene.get_model(selected_id);
       if (model) {
@@ -48,12 +46,13 @@ int main() {
 
       engine.draw_main_bar(model_path, sky_path);
       engine.draw_hierarchy_gui(scene.get_scene_map(), selected_id);
+      engine.draw_bottom_log_panel();
 
-      if (!model_path.empty() || model_path != "") {
+      if (!model_path.empty()) {
         scene.add_model(ModelLoader::load(model_path));
       }
 
-      if (!sky_path.empty() || sky_path != "") {
+      if (!sky_path.empty()) {
         engine.load_sky(sky_path);
       }
 
