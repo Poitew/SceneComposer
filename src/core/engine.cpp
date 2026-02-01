@@ -68,7 +68,24 @@ void Engine::begin_frame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
-  ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+  ImGuiID main_id{ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(),
+                                               ImGuiDockNodeFlags_PassthruCentralNode)};
+
+  static bool first_time = true;
+  if (first_time) {
+    ImGuiID left, right, bottom;
+
+    left = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Left, 0.17f, nullptr, &main_id);
+    bottom = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Down, 0.2f, nullptr, &main_id);
+    right = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Right, 0.15f, nullptr, &main_id);
+
+    ImGui::DockBuilderDockWindow("Scene Hierarchy", right);
+    ImGui::DockBuilderDockWindow("System Log", bottom);
+    ImGui::DockBuilderDockWindow("Object Properties", left);
+    ImGui::DockBuilderFinish(main_id);
+
+    first_time = false;
+  }
 
   glViewport(0, 0, width, height);
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
