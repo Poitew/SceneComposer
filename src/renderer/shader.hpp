@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/matrix.hpp>
 #include <glm/vec4.hpp>
-#include <iostream>
 #include <sstream>
 #include <streambuf>
 #include <string>

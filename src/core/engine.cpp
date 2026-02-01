@@ -43,7 +43,7 @@ bool Engine::init_application() {
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
 
   if (NFD_Init() != NFD_OKAY) {
-    std::cerr << "Failed to init NFD: " << NFD_GetError() << "\n";
+    Logger::log("Failed to init NFD: " + std::string{NFD_GetError()});
     return false;
   }
 

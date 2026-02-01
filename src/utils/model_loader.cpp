@@ -15,7 +15,8 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filepath) {
   // clang-format on
 
   if (!scene || !scene->mMeshes[0]) {
-    std::cerr << "Error when accessing the scene: " << importer.GetErrorString() << "\n";
+    std::string error{importer.GetErrorString()};
+    Logger::log("Error when accessing the scene: " + error);
   }
 
   std::vector<std::shared_ptr<Mesh>> meshes;

@@ -6,8 +6,6 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
-#include <iostream>
-
 #include "utils/logger.hpp"
 
 class Picking {

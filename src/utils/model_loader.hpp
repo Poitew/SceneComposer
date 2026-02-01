@@ -6,13 +6,13 @@
 
 #include <assimp/Importer.hpp>
 #include <glm/vec4.hpp>
-#include <iostream>
 #include <memory>
 #include <string>
 
 #include "renderer/mesh.hpp"
 #include "renderer/model.hpp"
 #include "renderer/texture.hpp"
+#include "utils/logger.hpp"
 
 class ModelLoader {
  public:

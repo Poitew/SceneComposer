@@ -2,7 +2,6 @@
 #define MODEL_HPP
 
 #include <glm/matrix.hpp>
-#include <iostream>
 #include <memory>
 #include <vector>
 

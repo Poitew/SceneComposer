@@ -10,7 +10,6 @@
 #include <assimp/texture.h>
 
 #include <assimp/Importer.hpp>
-#include <iostream>
 #include <string>
 
 #include "utils/logger.hpp"
