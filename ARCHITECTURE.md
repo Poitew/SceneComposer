@@ -10,6 +10,8 @@ A section that briefly explains the different directories of the software.
 
 **`shaders/`**
 
+- `icon_vs` and `icon.vs` are used to ouput png icons, and are used by the `IconModel` class. The models with this pair of shaders are unaffected by lightning and discard parts of textures where the alpha value is below 1.
+
 - `mesh.vs` and `mesh.fs` are used to output colors, textures, lights...
 
 - `picking.vs` and `picking.fs` are used for 3D Picking.
@@ -76,6 +78,10 @@ Set of classes not strictly related to the software logic.
 
 - The `ModelLoader` static class internally uses **_AssImp_** to get the all the meshes from a given filepath.  
   It then creates and returns a `Model`.
+
+- The `Logger` static class is used to log errors or some operations status.
+
+- The `IconModel` class displays a face with a texture that rotates toward the camera. It is used as a placeholder of where invisible objects, such as the main light source, are.
 
 &nbsp;
 

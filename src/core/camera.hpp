@@ -13,8 +13,8 @@ class Camera {
             float delta_time);
 
   void rotate(float deltaX, float deltaY, float delta_time);
-  glm::mat4 get_view();
-  glm::mat4 get_projection();
+  glm::mat4& get_view();
+  glm::mat4& get_projection();
 
  private:
   glm::vec3 camPos;

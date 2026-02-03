@@ -6,7 +6,6 @@ Lightweight OpenGL scene composer and renderer [WIP].
 
 In no particular order.
 
-- lightning
 - Infinite grid.
 - Rendering Images.
 - Make texture support better.

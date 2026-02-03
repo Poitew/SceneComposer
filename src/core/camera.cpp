@@ -52,6 +52,6 @@ void Camera::rotate(float deltaX, float deltaY, float delta_time) {
   camFront = glm::normalize(direction);
 }
 
-glm::mat4 Camera::get_view() { return view; }
+glm::mat4& Camera::get_view() { return view; }
 
-glm::mat4 Camera::get_projection() { return projection; }
+glm::mat4& Camera::get_projection() { return projection; }

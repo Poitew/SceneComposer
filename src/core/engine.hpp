@@ -24,6 +24,7 @@
 #include "renderer/model.hpp"
 #include "renderer/shader.hpp"
 #include "renderer/skybox.hpp"
+#include "utils/icon_model.hpp"
 #include "utils/time.hpp"
 
 using CScene = std::unordered_map<unsigned int, std::shared_ptr<Model>>;
@@ -40,8 +41,10 @@ class Engine {
   void begin_picking();
   void close_picking();
   void draw_skybox();
+  void draw_icons();
 
   void draw_object_properties_panel(Transform& transform, bool& hidden);
+  void draw_world_properties_panel();
   void draw_main_bar(std::string& model_path, std::string& sky_path);
   void draw_hierarchy_gui(CScene& scene, unsigned int& selected_id);
   void draw_bottom_log_panel();
@@ -66,6 +69,7 @@ class Engine {
   Picking picking_buffer;
   Camera camera;
   Skybox skybox;
+  IconModel sun_icon;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

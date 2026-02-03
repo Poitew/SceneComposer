@@ -45,8 +45,10 @@ int main() {
       }
 
       engine.draw_main_bar(model_path, sky_path);
+      engine.draw_world_properties_panel();
       engine.draw_hierarchy_gui(scene.get_scene_map(), selected_id);
       engine.draw_bottom_log_panel();
+      engine.draw_icons();
 
       if (!model_path.empty()) {
         scene.add_model(ModelLoader::load(model_path));

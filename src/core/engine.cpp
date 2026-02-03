@@ -38,6 +38,8 @@ bool Engine::init_application() {
 
   skybox = {"assets/sky.hdr"};
 
+  sun_icon = {"assets/sun.png"};
+
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
@@ -73,15 +75,17 @@ void Engine::begin_frame() {
 
   static bool first_time = true;
   if (first_time) {
-    ImGuiID left, right, bottom;
+    ImGuiID left, left_top, left_bottom, right, bottom;
 
     left = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Left, 0.17f, nullptr, &main_id);
+    left_top = ImGui::DockBuilderSplitNode(left, ImGuiDir_Up, 0.5f, nullptr, &left_bottom);
     bottom = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Down, 0.2f, nullptr, &main_id);
     right = ImGui::DockBuilderSplitNode(main_id, ImGuiDir_Right, 0.15f, nullptr, &main_id);
 
     ImGui::DockBuilderDockWindow("Scene Hierarchy", right);
     ImGui::DockBuilderDockWindow("System Log", bottom);
-    ImGui::DockBuilderDockWindow("Object Properties", left);
+    ImGui::DockBuilderDockWindow("Object Properties", left_top);
+    ImGui::DockBuilderDockWindow("World Properties", left_bottom);
     ImGui::DockBuilderFinish(main_id);
 
     first_time = false;
@@ -107,6 +111,7 @@ void Engine::begin_frame() {
 
   shader.use();
   shader.set_mat4("view", camera.get_view());
+  shader.set_mat4("view_pos", camera.get_view());
   shader.set_mat4("projection", camera.get_projection());
 
   picking_shader.use();
@@ -150,6 +155,8 @@ void Engine::draw_skybox() {
   glViewport(0, 0, width, height);
 }
 
+void Engine::draw_icons() { sun_icon.draw(camera.get_view(), camera.get_projection()); }
+
 void Engine::draw_object_properties_panel(Transform& transform, bool& hidden) {
   ImGui::Begin("Object Properties");
 
@@ -178,6 +185,25 @@ void Engine::draw_object_properties_panel(Transform& transform, bool& hidden) {
   }
 
   ImGui::End();
+}
+
+void Engine::draw_world_properties_panel() {
+  static float light_pos[3] = {1.0f, 5.0f, 1.0f};
+
+  ImGui::Begin("World Properties");
+
+  ImGui::DragFloat3("Light Source Position", light_pos, 0.01f);
+
+  ImGui::End();
+
+  glm::mat4 model = glm::mat4(1.0f);
+  glm::vec3 lightPos = glm::make_vec3(light_pos);
+  model = glm::translate(model, lightPos);
+
+  sun_icon.set_model_matrix(model);
+
+  shader.use();
+  shader.set_vec3("light_pos", lightPos);
 }
 
 void Engine::draw_main_bar(std::string& model_path, std::string& sky_path) {
@@ -238,7 +264,6 @@ void Engine::draw_hierarchy_gui(CScene& scene, unsigned int& selected_id) {
 
   if (ImGui::TreeNodeEx("Scene", root_flags)) {
     for (auto& model : scene) {
-      // The label id ## doesn't work
       std::string label = model.second->get_name() + "##" + std::to_string(model.first);
 
       ImGuiTreeNodeFlags leaf_flags = ImGuiTreeNodeFlags_Leaf;
