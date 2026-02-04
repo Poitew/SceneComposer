@@ -19,12 +19,8 @@ bool Picking::init(int width, int height) {
 
   glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (status != GL_FRAMEBUFFER_COMPLETE) {
-    std::string entry = "Status: " + std::to_string(status);
-    Logger::log(entry);
-    return false;
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    Logger::log("The FrameBuffer Object is not complete");
   }
 
   glBindTexture(GL_TEXTURE_2D, 0);

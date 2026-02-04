@@ -22,6 +22,7 @@
 #include "input/mouse.hpp"
 #include "renderer/mesh.hpp"
 #include "renderer/model.hpp"
+#include "renderer/renderer.hpp"
 #include "renderer/shader.hpp"
 #include "renderer/skybox.hpp"
 #include "utils/icon_model.hpp"
@@ -38,14 +39,19 @@ class Engine {
   bool init_imgui();
 
   void begin_frame();
+
   void begin_picking();
   void close_picking();
+
+  void begin_render();
+  void close_render();
+
   void draw_skybox();
   void draw_icons();
 
   void draw_object_properties_panel(Transform& transform, bool& hidden);
   void draw_world_properties_panel();
-  void draw_main_bar(std::string& model_path, std::string& sky_path);
+  void draw_main_bar(std::string& model_path, std::string& sky_path, bool& start_rendering);
   void draw_hierarchy_gui(CScene& scene, unsigned int& selected_id);
   void draw_bottom_log_panel();
 
@@ -70,6 +76,7 @@ class Engine {
   Camera camera;
   Skybox skybox;
   IconModel sun_icon;
+  Renderer renderer;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

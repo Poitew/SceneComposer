@@ -40,6 +40,8 @@ bool Engine::init_application() {
 
   sun_icon = {"assets/sun.png"};
 
+  renderer = {width, height};
+
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
@@ -150,6 +152,14 @@ void Engine::close_picking() {
   glClear(GL_DEPTH_BUFFER_BIT);
 }
 
+void Engine::begin_render() { renderer.enable_writing(); }
+
+void Engine::close_render() {
+  renderer.save_to_file();
+  renderer.disable_writing();
+  Logger::log("Scene successfully rendered");
+}
+
 void Engine::draw_skybox() {
   skybox.draw(camera.get_projection(), camera.get_view());
   glViewport(0, 0, width, height);
@@ -206,13 +216,13 @@ void Engine::draw_world_properties_panel() {
   shader.set_vec3("light_pos", lightPos);
 }
 
-void Engine::draw_main_bar(std::string& model_path, std::string& sky_path) {
+void Engine::draw_main_bar(std::string& model_path, std::string& sky_path, bool& start_rendering) {
   bool is_model_import_open = false;
   bool is_sky_import_open = false;
 
   ImGui::BeginMainMenuBar();
 
-  if (ImGui::BeginMenu("Importer")) {
+  if (ImGui::BeginMenu("Import")) {
     if (ImGui::MenuItem("Import Model (obj, fbx, glb, gltf)")) {
       is_model_import_open = true;
     }
@@ -223,6 +233,14 @@ void Engine::draw_main_bar(std::string& model_path, std::string& sky_path) {
 
     if (ImGui::MenuItem("Reset Sky")) {
       sky_path = "assets/sky.hdr";
+    }
+
+    ImGui::EndMenu();
+  }
+
+  if (ImGui::BeginMenu("Render")) {
+    if (ImGui::MenuItem("Render Image")) {
+      start_rendering = true;
     }
 
     ImGui::EndMenu();
@@ -289,7 +307,7 @@ void Engine::draw_hierarchy_gui(CScene& scene, unsigned int& selected_id) {
 
 void Engine::draw_bottom_log_panel() {
   ImGui::Begin("System Log");
-  auto logs = Logger::get_logs();
+  std::vector<std::string>& logs = Logger::get_logs();
 
   if (ImGui::Button("Clear")) {
     logs.clear();

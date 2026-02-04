@@ -14,11 +14,13 @@ int main() {
     unsigned int selected_id = 0;
     std::string model_path;
     std::string sky_path;
+    bool start_rendering = false;
 
     while (!engine.should_close()) {
       engine.begin_frame();
       model_path.clear();
       sky_path.clear();
+      start_rendering = false;
 
       engine.begin_picking();
       for (auto& model : scene.get_scene_map()) {
@@ -44,11 +46,21 @@ int main() {
         engine.draw_object_properties_panel(model->get_transform(), model->get_hidden_flag());
       }
 
-      engine.draw_main_bar(model_path, sky_path);
+      engine.draw_main_bar(model_path, sky_path, start_rendering);
       engine.draw_world_properties_panel();
       engine.draw_hierarchy_gui(scene.get_scene_map(), selected_id);
       engine.draw_bottom_log_panel();
       engine.draw_icons();
+
+      if (start_rendering) {
+        engine.begin_render();
+        for (auto& model : scene.get_scene_map()) {
+          if (model.second) {
+            model.second->draw(picking_shader);
+          }
+        }
+        engine.close_render();
+      }
 
       if (!model_path.empty()) {
         scene.add_model(ModelLoader::load(model_path));
