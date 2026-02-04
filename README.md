@@ -7,7 +7,6 @@ Lightweight OpenGL scene composer and renderer [WIP].
 In no particular order.
 
 - Infinite grid.
-- Make texture support better.
 
 PR's are welcome.
 

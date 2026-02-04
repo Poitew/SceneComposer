@@ -22,7 +22,7 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filepath) {
   std::vector<std::shared_ptr<Mesh>> meshes;
 
   for (int i = 0; i < scene->mNumMeshes; i++) {
-    meshes.push_back(process_mesh(scene->mMeshes[i], scene));
+    meshes.push_back(process_mesh(scene->mMeshes[i], scene, filepath));
   }
 
   id_count++;
@@ -31,7 +31,8 @@ std::shared_ptr<Model> ModelLoader::load(const std::string& filepath) {
   return std::make_shared<Model>(Model{meshes, id_count, name});
 }
 
-std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* scene) {
+std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* scene,
+                                                const std::string& filepath) {
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
   Texture texture;
@@ -76,10 +77,10 @@ std::shared_ptr<Mesh> ModelLoader::process_mesh(aiMesh* mesh, const aiScene* sce
 
         texture = Texture{memory, embeddedTex->mWidth, "texture_diffuse"};
       } else {
-        std::string directory = path.C_Str();
-        directory = directory.substr(0, directory.find_last_of("/\\"));
+        std::string model_dir = filepath.substr(0, filepath.find_last_of("/\\"));
+        std::string full_path = model_dir + "/" + path.C_Str();
 
-        texture = Texture{path.C_Str(), "texture_diffuse"};
+        texture = Texture{full_path.c_str(), "texture_diffuse"};
       }
     }
 
