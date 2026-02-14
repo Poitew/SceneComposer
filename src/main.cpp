@@ -1,11 +1,16 @@
 #include "core/engine.hpp"
-#include "core/scene.hpp"
 #include "utils/model_loader.hpp"
+#include "utils/scene.hpp"
 
-int main() {
+int main(int argc, char* argv[]) {
   Engine engine{1360, 768, "Composer"};
 
-  if (engine.init_application() && engine.init_imgui()) {
+  bool vr_mode;
+  if (argc > 0) {
+    vr_mode = (strcmp(argv[1], "vr_mode") == 0);
+  }
+
+  if (engine.init_application(vr_mode) && engine.init_imgui()) {
     Scene scene;
 
     Shader& shader = engine.get_shader();

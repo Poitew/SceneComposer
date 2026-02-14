@@ -7,7 +7,9 @@ void Engine::fb_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-bool Engine::init_application() {
+bool Engine::init_application(bool vr) {
+  vr_mode = vr;
+
   if (!glfwInit()) {
     return false;
   }
@@ -30,6 +32,7 @@ bool Engine::init_application() {
   Mouse::initialize(width, height);
 
   shader = {"shaders/mesh.vs", "shaders/mesh.fs"};
+
   picking_shader = {"shaders/picking.vs", "shaders/picking.fs"};
 
   picking_buffer.init(width, height);
@@ -41,6 +44,8 @@ bool Engine::init_application() {
   sun_icon = {"assets/sun.png"};
 
   renderer = {width, height};
+
+  vr_context = vr_mode ? VRContext{window, width, height} : VRContext{};
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
@@ -97,11 +102,11 @@ void Engine::begin_frame() {
   glClearColor(0.24f, 0.24f, 0.24f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  Time::update(glfwGetTime());
+  EngineTime::update(glfwGetTime());
 
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    camera.rotate(Mouse::get_delta_x(), Mouse::get_delta_y(), Time::delta());
+    camera.rotate(Mouse::get_delta_x(), Mouse::get_delta_y(), EngineTime::delta());
   } else {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   }
@@ -109,16 +114,19 @@ void Engine::begin_frame() {
   camera.move(Keyboard::is_down(GLFW_KEY_W), Keyboard::is_down(GLFW_KEY_S),
               Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q),
-              Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), Time::delta());
+              Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), EngineTime::delta());
+
+  proj = vr_mode ? vr_context.get_proj() : camera.get_projection();
+  view = vr_mode ? vr_context.get_view() : camera.get_view();
 
   shader.use();
-  shader.set_mat4("view", camera.get_view());
-  shader.set_mat4("view_pos", camera.get_view());
-  shader.set_mat4("projection", camera.get_projection());
+  shader.set_mat4("view", view);
+  shader.set_mat4("view_pos", view);
+  shader.set_mat4("projection", proj);
 
   picking_shader.use();
-  picking_shader.set_mat4("view", camera.get_view());
-  picking_shader.set_mat4("projection", camera.get_projection());
+  picking_shader.set_mat4("view", view);
+  picking_shader.set_mat4("projection", proj);
 }
 
 unsigned int Engine::read_click() {
@@ -161,11 +169,11 @@ void Engine::close_render() {
 }
 
 void Engine::draw_skybox() {
-  skybox.draw(camera.get_projection(), camera.get_view());
+  skybox.draw(proj, view);
   glViewport(0, 0, width, height);
 }
 
-void Engine::draw_icons() { sun_icon.draw(camera.get_view(), camera.get_projection()); }
+void Engine::draw_icons() { sun_icon.draw(view, proj); }
 
 void Engine::draw_object_properties_panel(Transform& transform, bool& hidden) {
   ImGui::Begin("Object Properties");

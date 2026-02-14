@@ -15,7 +15,7 @@
                 owner = "ocornut";
                 repo = "imgui";
                 rev = "docking";
-                hash = "sha256-JRA4E/aFcEEoB9FYHcLcEs4tgcX41ix2VjMV61PVQeA="; 
+                hash = "sha256-JRA4E/aFcEEoB9FYHcLcEs4tgcX41ix2VjMV61PVQeA=";
             };
 
             buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [
@@ -44,6 +44,8 @@
                 imgui-docking
                 assimp
                 nativefiledialog-extended
+
+                openxr-loader
             ];
 
             shellHook = ''

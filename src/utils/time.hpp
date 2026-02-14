@@ -1,7 +1,7 @@
 #ifndef TIME_HPP
 #define TIME_HPP
 
-class Time {
+class EngineTime {
  private:
   static float delta_time;
   static float last_frame;

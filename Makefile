@@ -1,9 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Iglad/include -Isrc
-GLFWFLAGS = -lglfw -ldl -lGL -lpthread
-IMGUIFLAGS = -limgui
-ASSIMPFLAGS = -lassimp
-NFD = -lnfd
+LINKFLAGS = -lglfw -ldl -lGL -lpthread -lglfw -ldl -lGL -lX11 -lpthread -lopenxr_loader -limgui -lassimp -lnfd
 
 BIN = ./bin
 OUT = composer.out
@@ -12,7 +9,7 @@ SHADERS = ./shaders/fragment_core.glsl ./shaders/vertex_core.glsl
 
 $(BIN)/$(OUT): $(MAIN)
 	mkdir -p $(BIN)
-	$(CXX) $(MAIN) $(CXXFLAGS) -o $(BIN)/$(OUT) $(GLFWFLAGS) $(IMGUIFLAGS) $(ASSIMPFLAGS) $(NFD)
+	$(CXX) $(MAIN) $(CXXFLAGS) -o $(BIN)/$(OUT) $(LINKFLAGS)
 
 .PHONY: clean
 clean:

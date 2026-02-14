@@ -46,5 +46,8 @@ glad/
 # Nix
 result
 
-#imgui
+# ImGUI
 imgui.ini
+
+# Render
+render.png

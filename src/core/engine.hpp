@@ -18,6 +18,7 @@
 
 #include "core/camera.hpp"
 #include "core/picking.hpp"
+#include "core/vr_context.hpp"
 #include "input/keyboard.hpp"
 #include "input/mouse.hpp"
 #include "renderer/mesh.hpp"
@@ -35,7 +36,7 @@ class Engine {
   Engine(int width, int height, const char* window_name);
   ~Engine();
 
-  bool init_application();
+  bool init_application(bool vr);
   bool init_imgui();
 
   void begin_frame();
@@ -69,7 +70,9 @@ class Engine {
   int width;
   int height;
   const char* window_name;
+  bool vr_mode;
 
+  VRContext vr_context;
   Shader shader;
   Shader picking_shader;
   Picking picking_buffer;
@@ -77,6 +80,9 @@ class Engine {
   Skybox skybox;
   IconModel sun_icon;
   Renderer renderer;
+
+  glm::mat4 view;
+  glm::mat4 proj;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

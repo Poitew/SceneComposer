@@ -74,7 +74,7 @@ Contains classes related to the rendering of objects.
 
 Set of classes not strictly related to the software logic.
 
-- The `Time` static class provides an easy way to access the delta time.
+- The `EngineTime` static class provides an easy way to access the delta EngineTime.
 
 - The `ModelLoader` static class internally uses **_AssImp_** to get the all the meshes from a given filepath.  
   It then creates and returns a `Model`.

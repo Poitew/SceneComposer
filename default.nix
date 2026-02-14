@@ -40,6 +40,8 @@ in
                 imgui-docking
                 assimp
                 nativefiledialog-extended
+
+                openxr-loader
             ];
 
         buildPhase = ''
