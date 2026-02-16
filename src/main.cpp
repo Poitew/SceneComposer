@@ -6,8 +6,8 @@ int main(int argc, char* argv[]) {
   Engine engine{1360, 768, "Composer"};
 
   bool vr_mode;
-  if (argc > 0) {
-    vr_mode = (strcmp(argv[1], "vr_mode") == 0);
+  if (argc > 1 && argv[1] != nullptr) {
+    vr_mode = std::string(argv[1]) == "vr_mode";
   }
 
   if (engine.init_application(vr_mode) && engine.init_imgui()) {
