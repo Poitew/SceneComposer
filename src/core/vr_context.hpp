@@ -38,13 +38,14 @@ class VRContext {
   float far_z;
   int width;
   int height;
+  bool is_running;
 
   XrInstance instance;
   XrSystemId system;
   XrSession session;
   XrSpace world_space;
 
-  XrFrameState frame_state;
+  XrFrameState frame_state{XR_TYPE_FRAME_STATE};
   XrSwapchain swapchain;
 
   std::vector<XrView> eyes;
@@ -55,6 +56,8 @@ class VRContext {
 
   glm::mat4 view;
   glm::mat4 proj;
+
+  void poll_events();
 };
 
 #endif

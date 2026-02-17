@@ -116,6 +116,7 @@ void Engine::begin_frame() {
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q),
               Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), EngineTime::delta());
 
+  if (vr_mode) vr_context.begin_frame();
   proj = vr_mode ? vr_context.get_proj() : camera.get_projection();
   view = vr_mode ? vr_context.get_view() : camera.get_view();
 

@@ -1,6 +1,7 @@
 #include "vr_context.hpp"
 
 VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, height{height} {
+  eyes.resize(2, {XR_TYPE_VIEW});
   near_z = 0.1f;
   far_z = 1000.0f;
 
@@ -36,6 +37,12 @@ VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, 
   XrSessionCreateInfo session_info{XR_TYPE_SESSION_CREATE_INFO};
   session_info.next = &graphics_binding;
   session_info.systemId = system;
+  PFN_xrGetOpenGLGraphicsRequirementsKHR pfnGetOpenGLGraphicsRequirementsKHR = nullptr;
+  xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR",
+                        (PFN_xrVoidFunction*)&pfnGetOpenGLGraphicsRequirementsKHR);
+
+  XrGraphicsRequirementsOpenGLKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
+  pfnGetOpenGLGraphicsRequirementsKHR(instance, system, &graphicsRequirements);
 
   xrCreateSession(instance, &session_info, &session);
 
@@ -68,7 +75,34 @@ VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, 
   xrEnumerateSwapchainImages(swapchain, count, &count, (XrSwapchainImageBaseHeader*)images.data());
 }
 
+void VRContext::poll_events() {
+  XrEventDataBuffer event{XR_TYPE_EVENT_DATA_BUFFER};
+
+  while (xrPollEvent(instance, &event) == XR_SUCCESS) {
+    if (event.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
+      auto* state_changed = (XrEventDataSessionStateChanged*)&event;
+      XrSessionState current_state = state_changed->state;
+
+      if (current_state == XR_SESSION_STATE_READY) {
+        XrSessionBeginInfo begin_info{XR_TYPE_SESSION_BEGIN_INFO};
+        begin_info.primaryViewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
+        xrBeginSession(session, &begin_info);
+        is_running = true;
+      }
+      if (current_state == XR_SESSION_STATE_STOPPING) {
+        xrEndSession(session);
+        is_running = false;
+      }
+    }
+  }
+}
+
 void VRContext::begin_frame() {
+  poll_events();
+
+  if (!is_running) return;
+
   XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
   xrWaitFrame(session, &wait_info, &frame_state);
 
