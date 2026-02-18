@@ -3,14 +3,14 @@
 #include "utils/scene.hpp"
 
 int main(int argc, char* argv[]) {
-  Engine engine{1360, 768, "Composer"};
-
   bool vr_mode;
   if (argc > 1 && argv[1] != nullptr) {
     vr_mode = std::string(argv[1]) == "vr_mode";
   }
 
-  if (engine.init_application(vr_mode) && engine.init_imgui()) {
+  Engine engine{1360, 768, "Composer", vr_mode};
+
+  if (engine.init_application() && engine.init_imgui()) {
     Scene scene;
 
     Shader& shader = engine.get_shader();

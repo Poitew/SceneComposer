@@ -1,14 +1,20 @@
 #include "engine.hpp"
 
-Engine::Engine(int width, int height, const char* window_name)
-    : width{width}, height{height}, window_name{window_name} {}
+Engine::Engine(int width, int height, const char* window_name, bool vr_modde)
+    : width{width}, height{height}, window_name{window_name}, vr_mode{vr_mode} {}
 
 void Engine::fb_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-bool Engine::init_application(bool vr) {
-  vr_mode = vr;
+bool Engine::init_application() {
+  if (vr_mode) {
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+    Logger::log("Using x11");
+  } else {
+    glfwInitHint(GLFW_PLATFORM, GLFW_ANY_PLATFORM);
+    Logger::log("Using preferred platform");
+  }
 
   if (!glfwInit()) {
     return false;

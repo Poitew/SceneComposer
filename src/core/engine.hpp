@@ -33,10 +33,10 @@ using CScene = std::unordered_map<unsigned int, std::shared_ptr<Model>>;
 
 class Engine {
  public:
-  Engine(int width, int height, const char* window_name);
+  Engine(int width, int height, const char* window_name, bool vr_mode);
   ~Engine();
 
-  bool init_application(bool vr);
+  bool init_application();
   bool init_imgui();
 
   void begin_frame();
