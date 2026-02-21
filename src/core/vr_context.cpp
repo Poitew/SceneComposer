@@ -2,6 +2,7 @@
 
 VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, height{height} {
   eyes.resize(2, {XR_TYPE_VIEW});
+  projection_views.resize(2, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
   near_z = 0.1f;
   far_z = 1000.0f;
 
@@ -101,7 +102,7 @@ void VRContext::poll_events() {
 void VRContext::begin_frame() {
   poll_events();
 
-  if (!is_running) return;
+  if (!is_running || eyes.size() < 2 || images.empty()) return;
 
   XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
   xrWaitFrame(session, &wait_info, &frame_state);
