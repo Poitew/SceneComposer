@@ -33,13 +33,14 @@ The core of the software.
 - The `Engine` class takes care of initializing libraries, classes, shaders...
   It also holds functions related to the rendering loop such as GUI drawing, meshes rendering...
 
-- The `Camera` class is responsible for the movement of the scene, and the general perspective of the camera.  
-  Owned by the engine but logically independent.
+- The `Camera` class is responsible for the movement of the scene, and the general perspective of the camera.
+  Its function `Camera::get_base_transform()` returns a view mat4. If the software is opened in vr mode this mat4 is subject to
+  more operations. On the other hand, in a desktop app the view mat4 is the final matrix used to simulate a camera.
 
 - The `Picking` class is used to take information from the frame buffer object (fbo).
   More precisely, the fbo can be seen as a grid of 0 and models ID. Where a pixel of a model is drawn, instead of the color we draw its ID. When we click on the screen we get the coordinates of the click and check if an ID is saved at those specific coordinates. We can then use this ID to operate on a specific model.
 
-- The `Scene` class holds a `map<id, model>`, and a set of functions to operate on said data structure.
+- The `VRContext` class is used to prepare OpenXR to init a vr environment. It also handles the view mat4 transformation.
 
 &nbsp;
 
@@ -83,6 +84,8 @@ Set of classes not strictly related to the software logic.
 
 - The `IconModel` class displays a face with a texture that rotates toward the camera. It is used as a placeholder of where invisible objects, such as the main light source, are.
 
+- The `Scene` class holds a `map<id, model>`, and a set of functions to operate on said data structure.
+
 &nbsp;
 
 **`src/main.cpp`**
@@ -94,6 +97,7 @@ The entry point of the app. An object of class `Engine` and one of class `Scene`
 Rendering pipeline:
 
 1. `Engine` and `Scene` are initialized.
+    - If `vr_mode` is **true**, `VRContext` is initializated.
 2. The rendering loop starts.
 3. `Engine::begin_frame()` is called.
 4. Models are loaded in the frame buffer objects.
