@@ -26,19 +26,23 @@
 class VRContext {
  public:
   VRContext() = default;
-  VRContext(GLFWwindow* window, int width, int height);
+  VRContext(GLFWwindow* window);
   void begin_frame();
+  bool next_eye(glm::mat4& player_body);
   void end_frame();
 
   glm::mat4 get_proj();
   glm::mat4 get_view();
 
  private:
+  GLuint FBO;
   float near_z;
   float far_z;
   int width;
   int height;
   bool is_running;
+  int current_eye;
+  uint32_t current_img;
 
   XrInstance instance;
   XrSystemId system;

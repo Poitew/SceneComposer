@@ -1,10 +1,13 @@
+#include <iostream>
+
 #include "core/engine.hpp"
 #include "utils/model_loader.hpp"
 #include "utils/scene.hpp"
 
 int main(int argc, char* argv[]) {
-  bool vr_mode;
-  if (argc > 1 && argv[1] != nullptr) {
+  bool vr_mode = false;
+
+  if (argc > 1) {
     vr_mode = std::string(argv[1]) == "vr_mode";
   }
 

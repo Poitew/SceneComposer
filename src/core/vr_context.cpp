@@ -1,10 +1,20 @@
 #include "vr_context.hpp"
 
-VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, height{height} {
+VRContext::VRContext(GLFWwindow* window) {
   eyes.resize(2, {XR_TYPE_VIEW});
   projection_views.resize(2, {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW});
+
   near_z = 0.1f;
   far_z = 1000.0f;
+  current_img = 0;
+
+  glGenFramebuffers(1, &FBO);
+  GLuint depth_rb;
+  glGenRenderbuffers(1, &depth_rb);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_rb);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+  glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_rb);
 
   // Instance
   XrApplicationInfo AI;
@@ -33,6 +43,17 @@ VRContext::VRContext(GLFWwindow* window, int width, int height) : width{width}, 
   XrSystemGetInfo system_info{XR_TYPE_SYSTEM_GET_INFO};
   system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
   xrGetSystem(instance, &system_info, &system);
+
+  // Width - Height
+  XrViewConfigurationView view_configs[2] = {{XR_TYPE_VIEW_CONFIGURATION_VIEW},
+                                             {XR_TYPE_VIEW_CONFIGURATION_VIEW}};
+  uint32_t view_count;
+
+  xrEnumerateViewConfigurationViews(instance, system, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, 2,
+                                    &view_count, view_configs);
+
+  width = view_configs[0].recommendedImageRectWidth;
+  height = view_configs[0].recommendedImageRectHeight;
 
   // Session
   XrSessionCreateInfo session_info{XR_TYPE_SESSION_CREATE_INFO};
@@ -110,51 +131,58 @@ void VRContext::begin_frame() {
   XrFrameBeginInfo begin_info{XR_TYPE_FRAME_BEGIN_INFO};
   xrBeginFrame(session, &begin_info);
 
-  XrViewLocateInfo view_locate_info{XR_TYPE_VIEW_LOCATE_INFO};
-  view_locate_info.viewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-  view_locate_info.displayTime = frame_state.predictedDisplayTime;
-  view_locate_info.space = world_space;
+  current_eye = -1;
+}
 
-  XrViewState view_state{XR_TYPE_VIEW_STATE};
-  uint32_t view_count_output;
-  xrLocateViews(session, &view_locate_info, &view_state, 2, &view_count_output, eyes.data());
-
-  for (int i = 0; i < 2; i++) {
-    glm::quat q(eyes[i].pose.orientation.w, eyes[i].pose.orientation.x, eyes[i].pose.orientation.y,
-                eyes[i].pose.orientation.z);
-    glm::vec3 p(eyes[i].pose.position.x, eyes[i].pose.position.y, eyes[i].pose.position.z);
-
-    view = glm::inverse(glm::translate(glm::mat4(1.0f), p) * glm::mat4_cast(q));
-
-    float tanLeft = tanf(eyes[i].fov.angleLeft);
-    float tanRight = tanf(eyes[i].fov.angleRight);
-    float tanUp = tanf(eyes[i].fov.angleUp);
-    float tanDown = tanf(eyes[i].fov.angleDown);
-
-    proj = glm::frustum(tanLeft * near_z, tanRight * near_z, tanDown * near_z, tanUp * near_z,
-                        near_z, far_z);
-
-    projection_views[i].pose = eyes[i].pose;
-    projection_views[i].fov = eyes[i].fov;
-    projection_views[i].subImage.swapchain = swapchain;
-    projection_views[i].subImage.imageRect = {{0, 0}, {width, height}};
-    projection_views[i].subImage.imageArrayIndex = i;
-
-    uint32_t image_index;
-    XrSwapchainImageAcquireInfo acquire_info{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-    xrAcquireSwapchainImage(swapchain, &acquire_info, &image_index);
-
-    XrSwapchainImageWaitInfo wait_img_info{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-    wait_img_info.timeout = XR_INFINITE_DURATION;
-    xrWaitSwapchainImage(swapchain, &wait_img_info);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                           images[image_index].image, 0);
-
+bool VRContext::next_eye(glm::mat4& player_body) {
+  if (current_eye >= 0) {
     XrSwapchainImageReleaseInfo release_info{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
     xrReleaseSwapchainImage(swapchain, &release_info);
   }
+
+  current_eye++;
+  if (current_eye >= 2) return false;
+
+  XrViewLocateInfo locate_info{XR_TYPE_VIEW_LOCATE_INFO, nullptr,
+                               XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+                               frame_state.predictedDisplayTime, world_space};
+  XrViewState state{XR_TYPE_VIEW_STATE};
+  uint32_t count;
+  xrLocateViews(session, &locate_info, &state, 2, &count, eyes.data());
+
+  XrSwapchainImageAcquireInfo acq_info{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+  xrAcquireSwapchainImage(swapchain, &acq_info, &current_img);
+  XrSwapchainImageWaitInfo wait_info{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO, nullptr,
+                                     XR_INFINITE_DURATION};
+  xrWaitSwapchainImage(swapchain, &wait_info);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, images[current_img].image, 0,
+                            current_eye);
+
+  glViewport(0, 0, width, height);
+
+  glm::quat q(eyes[current_eye].pose.orientation.w, eyes[current_eye].pose.orientation.x,
+              eyes[current_eye].pose.orientation.y, eyes[current_eye].pose.orientation.z);
+  glm::vec3 p(eyes[current_eye].pose.position.x, eyes[current_eye].pose.position.y,
+              eyes[current_eye].pose.position.z);
+
+  glm::mat4 head_pose = glm::translate(glm::mat4(1.0f), p) * glm::mat4_cast(q);
+  view = glm::inverse(head_pose) * player_body;
+
+  float tL = tanf(eyes[current_eye].fov.angleLeft);
+  float tR = tanf(eyes[current_eye].fov.angleRight);
+  float tU = tanf(eyes[current_eye].fov.angleUp);
+  float tD = tanf(eyes[current_eye].fov.angleDown);
+  proj = glm::frustum(tL * near_z, tR * near_z, tD * near_z, tU * near_z, near_z, far_z);
+
+  projection_views[current_eye].pose = eyes[current_eye].pose;
+  projection_views[current_eye].fov = eyes[current_eye].fov;
+  projection_views[current_eye].subImage.swapchain = swapchain;
+  projection_views[current_eye].subImage.imageRect = {{0, 0}, {(int)width, (int)height}};
+  projection_views[current_eye].subImage.imageArrayIndex = current_eye;
+
+  return true;
 }
 
 void VRContext::end_frame() {

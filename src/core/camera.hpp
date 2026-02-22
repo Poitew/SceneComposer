@@ -13,20 +13,22 @@ class Camera {
             float delta_time);
 
   void rotate(float deltaX, float deltaY, float delta_time);
-  glm::mat4& get_view();
-  glm::mat4& get_projection();
+
+  glm::mat4 get_base_transform();
+
+  glm::mat4 get_projection(float aspect);
 
  private:
   glm::vec3 camPos;
   glm::vec3 camFront;
   glm::vec3 camUp;
 
-  glm::mat4 view;
-  glm::mat4 projection;
-
   float yaw;
   float pitch;
   float speed;
+  float fov;
+  float near_plane;
+  float far_plane;
 };
 
 #endif

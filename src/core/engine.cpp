@@ -1,6 +1,6 @@
 #include "engine.hpp"
 
-Engine::Engine(int width, int height, const char* window_name, bool vr_modde)
+Engine::Engine(int width, int height, const char* window_name, bool vr_mode)
     : width{width}, height{height}, window_name{window_name}, vr_mode{vr_mode} {}
 
 void Engine::fb_size_callback(GLFWwindow* window, int width, int height) {
@@ -51,7 +51,7 @@ bool Engine::init_application() {
 
   renderer = {width, height};
 
-  vr_context = vr_mode ? VRContext{window, width, height} : VRContext{};
+  vr_context = vr_mode ? VRContext{window} : VRContext{};
 
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
@@ -122,9 +122,25 @@ void Engine::begin_frame() {
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q),
               Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), EngineTime::delta());
 
-  if (vr_mode) vr_context.begin_frame();
-  proj = vr_mode ? vr_context.get_proj() : camera.get_projection();
-  view = vr_mode ? vr_context.get_view() : camera.get_view();
+  glm::mat4 body = camera.get_base_transform();
+
+  if (vr_mode) {
+    vr_context.begin_frame();
+    while (vr_context.next_eye(body)) {
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      proj = vr_context.get_proj();
+      view = vr_context.get_view();
+    }
+
+  } else {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    proj = camera.get_projection((float)width / height);
+    view = body;
+  }
 
   shader.use();
   shader.set_mat4("view", view);
@@ -352,6 +368,8 @@ void Engine::draw_bottom_log_panel() {
 void Engine::load_sky(std::string path) { skybox = {path}; }
 
 void Engine::end_frame() {
+  if (vr_mode) vr_context.end_frame();
+
   Mouse::reset_deltas();
 
   ImGui::Render();
