@@ -121,27 +121,9 @@ void Engine::begin_frame() {
               Keyboard::is_down(GLFW_KEY_A), Keyboard::is_down(GLFW_KEY_D),
               Keyboard::is_down(GLFW_KEY_E), Keyboard::is_down(GLFW_KEY_Q),
               Keyboard::is_down(GLFW_KEY_LEFT_SHIFT), EngineTime::delta());
+}
 
-  glm::mat4 body = camera.get_base_transform();
-
-  if (vr_mode) {
-    vr_context.begin_frame();
-    while (vr_context.next_eye(body)) {
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      proj = vr_context.get_proj();
-      view = vr_context.get_view();
-    }
-
-  } else {
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, width, height);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    proj = camera.get_projection((float)width / height);
-    view = body;
-  }
-
+void Engine::update_shaders(glm::mat4& view, glm::mat4 proj) {
   shader.use();
   shader.set_mat4("view", view);
   shader.set_mat4("view_pos", view);
@@ -150,6 +132,20 @@ void Engine::begin_frame() {
   picking_shader.use();
   picking_shader.set_mat4("view", view);
   picking_shader.set_mat4("projection", proj);
+}
+
+void Engine::begin_vr_frame() { vr_context.begin_frame(); }
+
+bool Engine::next_eye() {
+  glm::mat4 body = camera.get_base_transform();
+
+  return vr_context.next_eye(body);
+}
+
+void Engine::end_vr_frame() {
+  vr_context.end_frame();
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, width, height);
 }
 
 unsigned int Engine::read_click() {
@@ -191,12 +187,19 @@ void Engine::close_render() {
   Logger::log("Scene successfully rendered");
 }
 
-void Engine::draw_skybox() {
+void Engine::draw_skybox(glm::mat4 view, glm::mat4 proj) {
   skybox.draw(proj, view);
   glViewport(0, 0, width, height);
 }
 
-void Engine::draw_icons() { sun_icon.draw(view, proj); }
+void Engine::draw_icons(glm::mat4 view, glm::mat4 proj) { sun_icon.draw(view, proj); }
+
+glm::mat4 Engine::get_view() {
+  return vr_mode ? vr_context.get_view() : camera.get_base_transform();
+}
+glm::mat4 Engine::get_proj() {
+  return vr_mode ? vr_context.get_proj() : camera.get_projection((float)width / height);
+}
 
 void Engine::draw_object_properties_panel(Transform& transform, bool& hidden) {
   ImGui::Begin("Object Properties");
@@ -368,8 +371,6 @@ void Engine::draw_bottom_log_panel() {
 void Engine::load_sky(std::string path) { skybox = {path}; }
 
 void Engine::end_frame() {
-  if (vr_mode) vr_context.end_frame();
-
   Mouse::reset_deltas();
 
   ImGui::Render();

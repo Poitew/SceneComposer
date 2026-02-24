@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "core/engine.hpp"
 #include "utils/model_loader.hpp"
 #include "utils/scene.hpp"
@@ -24,27 +22,45 @@ int main(int argc, char* argv[]) {
     std::string sky_path;
     bool start_rendering = false;
 
+    auto render_world = [&](glm::mat4 v, glm::mat4 p) {
+      engine.update_shaders(v, p);
+
+      for (auto& model : scene.get_scene_map()) {
+        if (model.second) model.second->draw(shader);
+      }
+
+      engine.draw_skybox(v, p);
+      engine.draw_icons(v, p);
+    };
+
     while (!engine.should_close()) {
       engine.begin_frame();
       model_path.clear();
       sky_path.clear();
       start_rendering = false;
 
-      engine.begin_picking();
-      for (auto& model : scene.get_scene_map()) {
-        if (model.second) {
-          model.second->draw_picking(picking_shader);
-        }
-      }
-      engine.close_picking();
+      if (vr_mode) {
+        engine.begin_vr_frame();
 
-      for (auto& model : scene.get_scene_map()) {
-        if (model.second) {
-          model.second->draw(shader);
-        }
-      }
+        while (engine.next_eye()) {
+          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      engine.draw_skybox();
+          render_world(engine.get_view(), engine.get_proj());
+        }
+
+        engine.end_vr_frame();
+        render_world(engine.get_view(), engine.get_proj());
+      } else {
+        engine.begin_picking();
+        for (auto& model : scene.get_scene_map()) {
+          if (model.second) {
+            model.second->draw_picking(picking_shader);
+          }
+        }
+        engine.close_picking();
+
+        render_world(engine.get_view(), engine.get_proj());
+      }
 
       unsigned int model_id = engine.read_click();
       selected_id = model_id > 0 ? model_id : selected_id;
@@ -58,7 +74,6 @@ int main(int argc, char* argv[]) {
       engine.draw_world_properties_panel();
       engine.draw_hierarchy_gui(scene.get_scene_map(), selected_id);
       engine.draw_bottom_log_panel();
-      engine.draw_icons();
 
       if (start_rendering) {
         engine.begin_render();

@@ -47,8 +47,14 @@ class Engine {
   void begin_render();
   void close_render();
 
-  void draw_skybox();
-  void draw_icons();
+  void begin_vr_frame();
+  bool next_eye();
+  void end_vr_frame();
+
+  void draw_skybox(glm::mat4 view, glm::mat4 proj);
+  void draw_icons(glm::mat4 view, glm::mat4 proj);
+
+  void update_shaders(glm::mat4& view, glm::mat4 proj);
 
   void draw_object_properties_panel(Transform& transform, bool& hidden);
   void draw_world_properties_panel();
@@ -61,6 +67,9 @@ class Engine {
   void end_frame();
 
   bool should_close();
+
+  glm::mat4 get_view();
+  glm::mat4 get_proj();
 
   Shader& get_shader();
   Shader& get_picking_shader();
@@ -80,9 +89,6 @@ class Engine {
   Skybox skybox;
   IconModel sun_icon;
   Renderer renderer;
-
-  glm::mat4 view;
-  glm::mat4 proj;
 
   static void fb_size_callback(GLFWwindow* window, int width, int height);
 };

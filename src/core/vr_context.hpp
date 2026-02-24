@@ -21,6 +21,7 @@
 #include <cstring>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/matrix.hpp>
+#include <iostream>
 #include <vector>
 
 class VRContext {

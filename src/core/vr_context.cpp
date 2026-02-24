@@ -8,14 +8,6 @@ VRContext::VRContext(GLFWwindow* window) {
   far_z = 1000.0f;
   current_img = 0;
 
-  glGenFramebuffers(1, &FBO);
-  GLuint depth_rb;
-  glGenRenderbuffers(1, &depth_rb);
-  glBindRenderbuffer(GL_RENDERBUFFER, depth_rb);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
-  glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_rb);
-
   // Instance
   XrApplicationInfo AI;
   strncpy(AI.applicationName, "Composer", XR_MAX_APPLICATION_NAME_SIZE);
@@ -54,6 +46,14 @@ VRContext::VRContext(GLFWwindow* window) {
 
   width = view_configs[0].recommendedImageRectWidth;
   height = view_configs[0].recommendedImageRectHeight;
+
+  glGenFramebuffers(1, &FBO);
+  GLuint depth_rb;
+  glGenRenderbuffers(1, &depth_rb);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_rb);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+  glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_rb);
 
   // Session
   XrSessionCreateInfo session_info{XR_TYPE_SESSION_CREATE_INFO};
@@ -160,6 +160,11 @@ bool VRContext::next_eye(glm::mat4& player_body) {
   glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, images[current_img].image, 0,
                             current_eye);
 
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    std::cout << "ERROR: VR Framebuffer is not complete!\n";
+  }
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0, 0, width, height);
 
   glm::quat q(eyes[current_eye].pose.orientation.w, eyes[current_eye].pose.orientation.x,
