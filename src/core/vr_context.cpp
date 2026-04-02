@@ -16,7 +16,7 @@ VRContext::VRContext(GLFWwindow* window) {
   AI.engineVersion = 1;
   AI.apiVersion = XR_CURRENT_API_VERSION;
 
-  const char* extensions[] = {"XR_KHR_opengl_enable", "GL_EXT_memory_object_fd"};
+  const char* extensions[] = {"XR_KHR_opengl_enable"};
 
   XrInstanceCreateInfo instance_info{XR_TYPE_INSTANCE_CREATE_INFO};
   instance_info.applicationInfo = AI;
@@ -26,10 +26,35 @@ VRContext::VRContext(GLFWwindow* window) {
   xrCreateInstance(&instance_info, &instance);
 
   // Bind to OpenGL
+  Display* x_display = glfwGetX11Display();
+  Window x_window = glfwGetX11Window(window);
+  GLXContext glx_context = glfwGetGLXContext(window);
+
+  XWindowAttributes wa;
+  XGetWindowAttributes(x_display, x_window, &wa);
+  VisualID visual_id = XVisualIDFromVisual(wa.visual);
+
+  int num_configs = 0;
+  GLXFBConfig* configs = glXGetFBConfigs(x_display, DefaultScreen(x_display), &num_configs);
+  GLXFBConfig matching_config = nullptr;
+
+  for (int i = 0; i < num_configs; i++) {
+    int vid;
+    glXGetFBConfigAttrib(x_display, configs[i], GLX_VISUAL_ID, &vid);
+
+    if ((VisualID)vid == visual_id) {
+      matching_config = configs[i];
+      break;
+    }
+  }
+  XFree(configs);
+
   XrGraphicsBindingOpenGLXlibKHR graphics_binding{XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
-  graphics_binding.xDisplay = glfwGetX11Display();
-  graphics_binding.glxDrawable = glfwGetX11Window(window);
-  graphics_binding.glxContext = glfwGetGLXContext(window);
+  graphics_binding.xDisplay = x_display;
+  graphics_binding.glxDrawable = x_window;
+  graphics_binding.glxContext = glx_context;
+  graphics_binding.glxFBConfig = matching_config;
+  graphics_binding.visualid = visual_id;
 
   // System
   XrSystemGetInfo system_info{XR_TYPE_SYSTEM_GET_INFO};
@@ -66,7 +91,13 @@ VRContext::VRContext(GLFWwindow* window) {
   XrGraphicsRequirementsOpenGLKHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
   pfnGetOpenGLGraphicsRequirementsKHR(instance, system, &graphicsRequirements);
 
-  xrCreateSession(instance, &session_info, &session);
+  XrResult session_res = xrCreateSession(instance, &session_info, &session);
+  if (XR_FAILED(session_res)) {
+    char error_buf[XR_MAX_RESULT_STRING_SIZE];
+    xrResultToString(instance, session_res, error_buf);
+    std::cerr << "Failed to create session: " << error_buf << std::endl;
+    return;
+  }
 
   // World position
   XrReferenceSpaceCreateInfo space_info{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
