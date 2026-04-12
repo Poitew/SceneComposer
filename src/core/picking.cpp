@@ -1,6 +1,12 @@
 #include "picking.hpp"
 
 bool Picking::init(int width, int height) {
+  if (m_fbo != 0) {
+    glDeleteFramebuffers(1, &m_fbo);
+    glDeleteTextures(1, &m_picking_texture);
+    glDeleteRenderbuffers(1, &m_depth_texture);
+  }
+
   glGenFramebuffers(1, &m_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 

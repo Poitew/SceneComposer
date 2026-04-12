@@ -4,6 +4,14 @@ Engine::Engine(int width, int height, const char* window_name, bool vr_mode)
     : width{width}, height{height}, window_name{window_name}, vr_mode{vr_mode} {}
 
 void Engine::fb_size_callback(GLFWwindow* window, int width, int height) {
+  Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+
+  if (engine) {
+    engine->width = width;
+    engine->height = height;
+    engine->picking_buffer.init(width, height);
+  }
+
   glViewport(0, 0, width, height);
 }
 
@@ -43,7 +51,7 @@ bool Engine::init_application() {
 
   picking_buffer.init(width, height);
 
-  camera = {90.0f, width, height, 0.1f, 1000.0f};
+  camera = {90.0f, 0.1f, 1000.0f};
 
   skybox = {"assets/sky.hdr"};
 
@@ -56,6 +64,7 @@ bool Engine::init_application() {
   glfwSetFramebufferSizeCallback(window, fb_size_callback);
   glfwSetKeyCallback(window, Keyboard::key_callback);
   glfwSetCursorPosCallback(window, Mouse::mouse_callback);
+  glfwSetWindowUserPointer(window, this);
 
   if (NFD_Init() != NFD_OKAY) {
     Logger::log("Failed to init NFD: " + std::string{NFD_GetError()});
@@ -197,6 +206,7 @@ void Engine::draw_icons(glm::mat4 view, glm::mat4 proj) { sun_icon.draw(view, pr
 glm::mat4 Engine::get_view() {
   return vr_mode ? vr_context.get_view() : camera.get_base_transform();
 }
+
 glm::mat4 Engine::get_proj() {
   return vr_mode ? vr_context.get_proj() : camera.get_projection((float)width / height);
 }
@@ -387,6 +397,7 @@ Shader& Engine::get_picking_shader() { return picking_shader; }
 bool Engine::should_close() { return glfwWindowShouldClose(window); }
 
 Engine::~Engine() {
+  glfwSetWindowUserPointer(window, nullptr);
   glfwTerminate();
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();

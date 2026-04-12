@@ -15,7 +15,7 @@ in
                 owner = "ocornut";
                 repo = "imgui";
                 rev = "docking";
-                hash = "sha256-wBvH9YFUTcRIYWR6+KROoKzsIHwLL7dOs1F/P6jUgGc="; 
+                hash = "sha256-PEfVSajjbWNHissISvh64ifiEJOP1g123DfVAuQqnLg="; 
             };
 
             buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [

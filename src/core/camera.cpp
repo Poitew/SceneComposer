@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-Camera::Camera(float fov, int width, int height, float near_plane, float far_plane)
+Camera::Camera(float fov, float near_plane, float far_plane)
     : fov{fov}, near_plane{near_plane}, far_plane{far_plane} {
   camPos = glm::vec3(0.0f, 0.0f, 3.0f);
   camFront = glm::vec3(0.0f, 0.0f, -1.0f);

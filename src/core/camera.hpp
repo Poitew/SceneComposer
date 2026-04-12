@@ -6,7 +6,7 @@
 
 class Camera {
  public:
-  Camera(float fov, int width, int height, float near_plane, float far_plane);
+  Camera(float fov, float near_plane, float far_plane);
   Camera() = default;
 
   void move(bool forward, bool backward, bool left, bool right, bool up, bool down, bool shift,
