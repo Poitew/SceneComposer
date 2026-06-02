@@ -43,7 +43,7 @@ A complete overview of the project can be found in `ARCHITECTURE.md` at the root
 
 - Infinite grid.
 - Individual picking.
-- Scene Save.
+- Scene Saving System.
 - Redo and Undo.
 - Support a more variety of textures.
 - Multiple lightnings.
