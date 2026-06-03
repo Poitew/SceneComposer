@@ -1,5 +1,23 @@
 let 
     pkgs = import <nixpkgs> { };
+
+    imgui-docking = pkgs.imgui.overrideAttrs (oldAttrs: {
+        version = "1.92.5-docking";
+        src = pkgs.fetchFromGitHub {
+            owner = "ocornut";
+            repo = "imgui";
+            rev = "docking";
+            hash = "sha256-Y7vquGOYs2+H37T7JP8EVGM0WfkozSrSiWAnwl/vuMk="; 
+        };
+
+        buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [
+            libX11
+            libXcursor
+            libXinerama
+            libXext
+            libXrandr
+        ]);
+    });
 in 
     pkgs.stdenv.mkDerivation rec {
         name = "composer";
@@ -7,42 +25,22 @@ in
 
         nativeBuildInputs =  with pkgs; [
             wrapGAppsHook3
+            python313
+            python313Packages.glad2
         ];
 
-        imgui-docking = pkgs.imgui.overrideAttrs (oldAttrs: {
-            version = "1.92.5-docking";
-            src = pkgs.fetchFromGitHub {
-                owner = "ocornut";
-                repo = "imgui";
-                rev = "docking";
-                hash = "sha256-Y7vquGOYs2+H37T7JP8EVGM0WfkozSrSiWAnwl/vuMk="; 
-            };
-
-            buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs; [
-                libX11
-                libXcursor
-                libXinerama
-                libXext
-                libXrandr
-            ]);
-        });
-
         buildInputs = with pkgs; [
-                gcc
-                clang-tools
+            gtk3
 
-                gtk3
+            glfw
+            glm
+            stb
+            imgui-docking
+            assimp
+            nativefiledialog-extended
 
-                glfw
-                glm
-                python313Packages.glad2
-                stb
-                imgui-docking
-                assimp
-                nativefiledialog-extended
-
-                openxr-loader
-            ];
+            openxr-loader
+        ];
 
         buildPhase = ''
             runHook preBuild

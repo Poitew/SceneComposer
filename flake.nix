@@ -35,6 +35,7 @@
                 gcc
                 gdb
                 clang-tools
+                python313
             ];
 
             buildInputs = with pkgs; [
@@ -57,7 +58,7 @@
 
                 if [ ! -d glad/include ]; then
                     mkdir -p glad
-                    python -m glad --api gl:core=4.6 --out-path glad c
+                    ${pkgs.python313}/bin/python -m glad --api gl:core=4.6 --out-path glad c
                 fi
 
                 if [ ! -f .clang-format ]; then
