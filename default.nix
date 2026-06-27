@@ -7,7 +7,7 @@ let
             owner = "ocornut";
             repo = "imgui";
             rev = "docking";
-            hash = "sha256-Y7vquGOYs2+H37T7JP8EVGM0WfkozSrSiWAnwl/vuMk="; 
+            hash = "sha256-ocCgBM2uHDhdur81VKuKJNoa0TEvhfjhjfJlycC5YpI="; 
         };
 
         buildInputs = (oldAttrs.buildInputs or []) ++ (with pkgs.xorg; [
@@ -27,6 +27,7 @@ in
             wrapGAppsHook3
             python313
             python313Packages.glad2
+            makeWrapper
         ];
 
         buildInputs = with pkgs; [
@@ -56,5 +57,10 @@ in
             cp ./bin/composer.out $out/bin 
 
             runHook postInstall
+        '';
+
+        postInstall = ''
+            wrapProgram $out/bin/composer.out \
+            --set XR_RUNTIME_JSON "${pkgs.monado}/share/openxr/1/openxr_monado.json"
         '';
     }
